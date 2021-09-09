@@ -115,6 +115,7 @@ data
 *.log.json
 work_dirs/
 pretrains
+tmp
 
 # Pytorch
 *.pth
