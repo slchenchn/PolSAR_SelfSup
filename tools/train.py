@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-09
+Last Modified: 2021-09-09
+	content: 
+'''
 from __future__ import division
 import argparse
 import importlib
@@ -78,7 +84,7 @@ def main():
         distributed = False
         assert cfg.model.type not in \
             ['DeepCluster', 'MOCO', 'SimCLR', 'ODC', 'NPID'], \
-            "{} does not support non-dist training.".format(cfg.model.type)
+            f"{cfg.model.type} does not support non-dist training."
     else:
         distributed = True
         if args.launcher == 'slurm':
