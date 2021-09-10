@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-08
+Last Modified: 2021-09-10
+	content: 
+'''
 import torch
 from PIL import Image
 from .registry import DATASETS
@@ -18,9 +24,7 @@ class ContrastiveDataset(BaseDataset):
     def __getitem__(self, idx):
         img = self.data_source.get_sample(idx)
         assert isinstance(img, Image.Image), \
-            'The output from the data source must be an Image, got: {}. \
-            Please ensure that the list file does not contain labels.'.format(
-            type(img))
+            f'The output from the data source must be an Image, got: {type(img)}. Please ensure that the list file does not contain labels.'
         img1 = self.pipeline(img)
         img2 = self.pipeline(img)
         if self.prefetch:
