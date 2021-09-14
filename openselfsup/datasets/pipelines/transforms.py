@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-08
+Last Modified: 2021-09-10
+	content: 
+'''
 import cv2
 import inspect
 import numpy as np
@@ -112,3 +118,19 @@ class Solarization(object):
     def __repr__(self):
         repr_str = self.__class__.__name__
         return repr_str
+
+
+@PIPELINES.register_module()
+class BoxBlur():
+    ''' Boxcar filtering 
+    NOTE: radis=1 means 3x3 average filtering
+    '''
+
+    def __init__(self, radius_max, radius_min) -> None:
+        self.radius_max = radius_max
+        self.radius_min = radius_min
+
+    def __call__(self, img):
+        radius = np.random.randint(self.radius_min, self.radius_max)
+        img = img.filter(ImageFilter.BoxBlur(radius))
+        return img

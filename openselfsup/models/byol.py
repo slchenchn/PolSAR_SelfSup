@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-08
+Last Modified: 2021-09-10
+	content: 
+'''
 import torch
 import torch.nn as nn
 
@@ -16,12 +22,12 @@ class BYOL(nn.Module):
 
     Args:
         backbone (dict): Config dict for module of backbone ConvNet.
-        neck (dict): Config dict for module of deep features to compact feature vectors.
-            Default: None.
+        neck (dict): Config dict for module of deep features to compact
+            feature vectors. Default: None.
         head (dict): Config dict for module of loss functions. Default: None.
         pretrained (str, optional): Path to pre-trained weights. Default: None.
-        base_momentum (float): The base momentum coefficient for the target network.
-            Default: 0.996.
+        base_momentum (float): The base momentum coefficient for the target
+            network. Default: 0.996.
     """
 
     def __init__(self,
@@ -75,8 +81,7 @@ class BYOL(nn.Module):
         self._momentum_update()
 
     def forward_train(self, img, **kwargs):
-        """Forward computation during training.
-
+        """
         Args:
             img (Tensor): Input of two concatenated images of shape (N, 2, C, H, W).
                 Typically these should be mean centered and std scaled.
@@ -84,14 +89,14 @@ class BYOL(nn.Module):
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
         """
-        assert img.dim() == 5, \
-            "Input must have 5 dims, got: {}".format(img.dim())
+        assert img.dim() == 5, f"Input must have 5 dims, got: {img.dim()}"
         img_v1 = img[:, 0, ...].contiguous()
         img_v2 = img[:, 1, ...].contiguous()
         # compute query features
         proj_online_v1 = self.online_net(img_v1)[0]
         proj_online_v2 = self.online_net(img_v2)[0]
         with torch.no_grad():
+            # QUERY: why need to clone
             proj_target_v1 = self.target_net(img_v1)[0].clone().detach()
             proj_target_v2 = self.target_net(img_v2)[0].clone().detach()
 

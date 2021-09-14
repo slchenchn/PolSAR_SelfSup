@@ -1,3 +1,10 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-08
+Last Modified: 2021-09-10
+	content: 
+'''
+
 from math import cos, pi
 from mmcv.runner import Hook
 from mmcv.parallel import is_module_wrapper
@@ -23,6 +30,7 @@ class BYOLHook(Hook):
         self.update_interval = update_interval
 
     def before_train_iter(self, runner):
+        # QUERY: what does `module` mean
         assert hasattr(runner.model.module, 'momentum'), \
             "The runner must have attribute \"momentum\" in BYOLHook."
         assert hasattr(runner.model.module, 'base_momentum'), \
