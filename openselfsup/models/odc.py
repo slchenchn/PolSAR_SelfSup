@@ -8,7 +8,7 @@ from .registry import MODELS
 from .utils import Sobel
 
 
-@MODELS.register_module
+@MODELS.register_module()
 class ODC(nn.Module):
     """ODC.
 

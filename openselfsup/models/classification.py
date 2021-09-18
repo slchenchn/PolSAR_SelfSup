@@ -9,7 +9,7 @@ from .registry import MODELS
 from .utils import Sobel
 
 
-@MODELS.register_module
+@MODELS.register_module()
 class Classification(nn.Module):
     """Simple image classification.
 

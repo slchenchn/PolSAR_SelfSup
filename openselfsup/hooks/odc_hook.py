@@ -6,7 +6,7 @@ from openselfsup.utils import print_log
 from .registry import HOOKS
 
 
-@HOOKS.register_module
+@HOOKS.register_module()
 class ODCHook(Hook):
     """Hook for ODC.
 

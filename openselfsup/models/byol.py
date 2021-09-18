@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-10
+Last Modified: 2021-09-18
 	content: 
 '''
 import torch
@@ -13,7 +13,7 @@ from . import builder
 from .registry import MODELS
 
 
-@MODELS.register_module
+@MODELS.register_module()
 class BYOL(nn.Module):
     """BYOL.
 
@@ -37,7 +37,7 @@ class BYOL(nn.Module):
                  pretrained=None,
                  base_momentum=0.996,
                  **kwargs):
-        super(BYOL, self).__init__()
+        super().__init__()
         self.online_net = nn.Sequential(
             builder.build_backbone(backbone), builder.build_neck(neck))
         self.target_net = nn.Sequential(
@@ -60,6 +60,9 @@ class BYOL(nn.Module):
         """
         if pretrained is not None:
             print_log('load model from: {}'.format(pretrained), logger='root')
+        else:
+            print_log(f'load model from None, traning from scratch')
+
         self.online_net[0].init_weights(pretrained=pretrained) # backbone
         self.online_net[1].init_weights(init_linear='kaiming') # projection
         for param_ol, param_tgt in zip(self.online_net.parameters(),

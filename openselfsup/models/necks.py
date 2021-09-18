@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-18
+	content: 
+'''
 import torch
 import torch.nn as nn
 from packaging import version
@@ -24,7 +30,7 @@ def _init_weights(module, init_linear='normal', std=0.01, bias=0.):
                 nn.init.constant_(m.bias, 0)
 
 
-@NECKS.register_module
+@NECKS.register_module()
 class LinearNeck(nn.Module):
     """Linear neck: fc only.
     """
@@ -47,7 +53,7 @@ class LinearNeck(nn.Module):
         return [self.fc(x.view(x.size(0), -1))]
 
 
-@NECKS.register_module
+@NECKS.register_module()
 class RelativeLocNeck(nn.Module):
     """Relative patch location neck: fc-bn-relu-dropout.
     """
@@ -106,7 +112,7 @@ class RelativeLocNeck(nn.Module):
         return [x]
 
 
-@NECKS.register_module
+@NECKS.register_module()
 class NonLinearNeckV0(nn.Module):
     """The non-linear neck in ODC, fc-bn-relu-dropout-fc-relu.
     """
@@ -170,7 +176,7 @@ class NonLinearNeckV0(nn.Module):
         return [x]
 
 
-@NECKS.register_module
+@NECKS.register_module()
 class NonLinearNeckV1(nn.Module):
     """The non-linear neck in MoCo v2: fc-relu-fc.
     """
@@ -199,7 +205,7 @@ class NonLinearNeckV1(nn.Module):
         return [self.mlp(x.view(x.size(0), -1))]
 
 
-@NECKS.register_module
+@NECKS.register_module()
 class NonLinearNeckV2(nn.Module):
     """The non-linear neck in byol: fc-bn-relu-fc.
     """
@@ -223,14 +229,14 @@ class NonLinearNeckV2(nn.Module):
         _init_weights(self, init_linear)
 
     def forward(self, x):
-        assert len(x) == 1, "Got: {}".format(len(x))
-        x = x[0]
+        assert len(x) == 1, \
+                f"expect len of inputs feautes to be 1, Got: {len(x)}"
         if self.with_avg_pool:
             x = self.avgpool(x)
         return [self.mlp(x.view(x.size(0), -1))]
 
 
-@NECKS.register_module
+@NECKS.register_module()
 class NonLinearNeckSimCLR(nn.Module):
     """SimCLR non-linear neck.
 
@@ -336,7 +342,7 @@ class NonLinearNeckSimCLR(nn.Module):
         return [x]
 
 
-@NECKS.register_module
+@NECKS.register_module()
 class AvgPoolNeck(nn.Module):
     """Average pooling neck.
     """

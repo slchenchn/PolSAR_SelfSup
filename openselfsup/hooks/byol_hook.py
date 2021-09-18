@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-10
+Last Modified: 2021-09-18
 	content: 
 '''
 
@@ -12,7 +12,7 @@ from mmcv.parallel import is_module_wrapper
 from .registry import HOOKS
 
 
-@HOOKS.register_module
+@HOOKS.register_module()
 class BYOLHook(Hook):
     """Hook for BYOL.
 

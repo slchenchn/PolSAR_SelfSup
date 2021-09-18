@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-18
+	content: 
+'''
 import torch
 
 from openselfsup.utils import print_log
@@ -7,7 +13,7 @@ from .base import BaseDataset
 from .utils import to_numpy
 
 
-@DATASETS.register_module
+@DATASETS.register_module()
 class ClassificationDataset(BaseDataset):
     """Dataset for classification.
     """

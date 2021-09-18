@@ -11,7 +11,7 @@ from .registry import HOOKS
 from .extractor import Extractor
 
 
-@HOOKS.register_module
+@HOOKS.register_module()
 class DeepClusterHook(Hook):
     """Hook for DeepCluster.
 

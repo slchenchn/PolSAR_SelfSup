@@ -1,17 +1,26 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-18
+	content: 
+'''
+
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from mmcv.cnn import normal_init
 
 from ..registry import HEADS
 from .. import builder
 
-@HEADS.register_module
+@HEADS.register_module()
 class LatentPredictHead(nn.Module):
-    """Head for contrastive learning.
+    """Head for BYOL.
     """
 
     def __init__(self, predictor, size_average=True):
-        super(LatentPredictHead, self).__init__()
+        super().__init__()
+        # QUERY: why build neck, not build head?
         self.predictor = builder.build_neck(predictor)
         self.size_average = size_average
 
@@ -29,15 +38,15 @@ class LatentPredictHead(nn.Module):
             dict[str, Tensor]: A dictionary of loss components.
         """
         pred = self.predictor([input])[0]
-        pred_norm = nn.functional.normalize(pred, dim=1)
-        target_norm = nn.functional.normalize(target, dim=1)
+        pred_norm = F.normalize(pred, dim=1)
+        target_norm = F.normalize(target, dim=1)
         loss = -2 * (pred_norm * target_norm).sum()
         if self.size_average:
             loss /= input.size(0)
         return dict(loss=loss)
 
 
-@HEADS.register_module
+@HEADS.register_modulel()
 class LatentClsHead(nn.Module):
     """Head for contrastive learning.
     """

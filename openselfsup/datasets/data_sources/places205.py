@@ -2,7 +2,7 @@ from ..registry import DATASOURCES
 from .image_list import ImageList
 
 
-@DATASOURCES.register_module
+@DATASOURCES.register_module()
 class Places205(ImageList):
 
     def __init__(self, root, list_file, memcached, mclient_path, return_label=True, *args, **kwargs):

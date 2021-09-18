@@ -7,7 +7,7 @@ from . import builder
 from .registry import MODELS
 
 
-@MODELS.register_module
+@MODELS.register_module()
 class RotationPred(nn.Module):
     """Rotation prediction.
 

@@ -9,7 +9,7 @@ from mmcv.runner import get_dist_info
 from ..registry import MEMORIES
 
 
-@MEMORIES.register_module
+@MEMORIES.register_module()
 class ODCMemory(nn.Module):
     """Memory modules for ODC.
 

@@ -1,13 +1,13 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-10
+Last Modified: 2021-09-18
 	content: 
 '''
 
 _base_ = '../../base.py'
 
-# model settings
+# model settings, output stride=8 for deeplabv3
 model = dict(
     type='BYOL',
     pretrained=None,
@@ -17,13 +17,18 @@ model = dict(
         depth=50,
         in_channels=3,
         out_indices=[4],  # 0: conv-1, x: stage-x
-        norm_cfg=dict(type='BN')),
+        norm_cfg=dict(type='BN'),
+        # set output stride=8
+        dilations=(1, 1, 2, 4),
+        strides=(1, 2, 1, 1),
+        ),
     neck=dict(
         type='NonLinearNeckV2',
+        # olive-shaped projector
         in_channels=2048,
         hid_channels=4096,
         out_channels=256,
-        with_avg_pool=True),
+        with_avg_pool=False),
     head=dict(type='LatentPredictHead',
               size_average=True,
               predictor=dict(type='NonLinearNeckV2',

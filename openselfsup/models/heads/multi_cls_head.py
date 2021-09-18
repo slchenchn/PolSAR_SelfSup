@@ -5,7 +5,7 @@ from ..registry import HEADS
 from ..utils import build_norm_layer, MultiPooling
 
 
-@HEADS.register_module
+@HEADS.register_module()
 class MultiClsHead(nn.Module):
     """Multiple classifier heads.
     """

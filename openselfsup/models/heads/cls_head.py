@@ -5,7 +5,7 @@ from ..utils import accuracy
 from ..registry import HEADS
 
 
-@HEADS.register_module
+@HEADS.register_module()
 class ClsHead(nn.Module):
     """Simplest classifier head, with only one fc layer.
     """

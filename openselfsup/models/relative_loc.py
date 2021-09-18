@@ -7,7 +7,7 @@ from . import builder
 from .registry import MODELS
 
 
-@MODELS.register_module
+@MODELS.register_module()
 class RelativeLoc(nn.Module):
     """Relative patch location.
 

@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-10
+Last Modified: 2021-09-18
 	content: 
 '''
 import cv2
@@ -24,7 +24,7 @@ for m in inspect.getmembers(_transforms, inspect.isclass):
         PIPELINES.register_module(m[1])
 
 
-@PIPELINES.register_module
+@PIPELINES.register_module()
 class RandomAppliedTrans(object):
     """Randomly applied transformations.
 
@@ -46,7 +46,7 @@ class RandomAppliedTrans(object):
 
 
 # custom transforms
-@PIPELINES.register_module
+@PIPELINES.register_module()
 class Lighting(object):
     """Lighting noise(AlexNet - style PCA - based noise)."""
 
@@ -85,7 +85,7 @@ class Lighting(object):
         return repr_str
 
 
-@PIPELINES.register_module
+@PIPELINES.register_module()
 class GaussianBlur(object):
     """Gaussian blur augmentation in SimCLR https://arxiv.org/abs/2002.05709."""
 
@@ -103,7 +103,7 @@ class GaussianBlur(object):
         return repr_str
 
 
-@PIPELINES.register_module
+@PIPELINES.register_module()
 class Solarization(object):
     """Solarization augmentation in BYOL https://arxiv.org/abs/2006.07733."""
 

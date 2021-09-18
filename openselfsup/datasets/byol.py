@@ -10,7 +10,7 @@ from .builder import build_datasource
 from .utils import to_numpy
 
 
-@DATASETS.register_module
+@DATASETS.register_module()
 class BYOLDataset(Dataset):
     """Dataset for BYOL.
     """

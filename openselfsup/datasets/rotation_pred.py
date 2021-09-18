@@ -22,7 +22,7 @@ def rotate(img):
     ]
 
 
-@DATASETS.register_module
+@DATASETS.register_module()
 class RotationPredDataset(BaseDataset):
     """Dataset for rotation prediction.
     """

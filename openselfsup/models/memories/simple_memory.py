@@ -7,7 +7,7 @@ from openselfsup.utils import AliasMethod
 from ..registry import MEMORIES
 
 
-@MEMORIES.register_module
+@MEMORIES.register_module()
 class SimpleMemory(nn.Module):
     """Simple memory bank for NPID.
 

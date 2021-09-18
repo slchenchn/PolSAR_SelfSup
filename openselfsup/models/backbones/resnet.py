@@ -240,7 +240,7 @@ def make_res_layer(block,
     return nn.Sequential(*layers)
 
 
-@BACKBONES.register_module
+@BACKBONES.register_module()
 class ResNet(nn.Module):
     """ResNet backbone.
 

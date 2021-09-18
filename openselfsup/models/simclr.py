@@ -8,7 +8,7 @@ from .registry import MODELS
 from .utils import GatherLayer
 
 
-@MODELS.register_module
+@MODELS.register_module()
 class SimCLR(nn.Module):
     """SimCLR.
 

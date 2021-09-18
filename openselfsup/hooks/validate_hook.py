@@ -7,7 +7,7 @@ from openselfsup.utils import nondist_forward_collect, dist_forward_collect
 from .registry import HOOKS
 
 
-@HOOKS.register_module
+@HOOKS.register_module()
 class ValidateHook(Hook):
     """Validation hook.
 

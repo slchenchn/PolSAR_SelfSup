@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-10
+Last Modified: 2021-09-18
 	content: 
 '''
 import torch
@@ -11,7 +11,7 @@ from .base import BaseDataset
 from .utils import to_numpy
 
 
-@DATASETS.register_module
+@DATASETS.register_module()
 class ContrastiveDataset(BaseDataset):
     """Dataset for contrastive learning methods that forward
         two views of the image at a time (MoCo, SimCLR).

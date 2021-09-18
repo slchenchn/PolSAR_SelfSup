@@ -35,7 +35,7 @@ class Cifar(metaclass=ABCMeta):
             return img
 
 
-@DATASOURCES.register_module
+@DATASOURCES.register_module()
 class Cifar10(Cifar):
 
     CLASSES = [
@@ -56,7 +56,7 @@ class Cifar10(Cifar):
                   that may corrupt the dataset.")
 
 
-@DATASOURCES.register_module
+@DATASOURCES.register_module()
 class Cifar100(Cifar):
 
     def __init__(self, root, split, return_label=True):

@@ -3,7 +3,7 @@ from .registry import DATASETS
 from .base import BaseDataset
 
 
-@DATASETS.register_module
+@DATASETS.register_module()
 class NPIDDataset(BaseDataset):
     """Dataset for NPID.
     """

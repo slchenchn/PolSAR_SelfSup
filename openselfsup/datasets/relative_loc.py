@@ -35,7 +35,7 @@ def image_to_patches(img):
     return patches
 
 
-@DATASETS.register_module
+@DATASETS.register_module()
 class RelativeLocDataset(BaseDataset):
     """Dataset for relative patch location.
     """
