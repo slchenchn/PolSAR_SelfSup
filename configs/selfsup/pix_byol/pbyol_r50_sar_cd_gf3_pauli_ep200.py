@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-18
+Last Modified: 2021-09-19
 	content: 
 '''
 
@@ -37,12 +37,11 @@ model = dict(
                              
 # dataset settings
 data_source_cfg = dict(
-    type='SARCD',
+    type='SpaceNet6',
     memcached=False,
 )
-data_train_list = ['data/SN6_full/train.txt', 
-                    'data/SN6_full/test.txt']
-data_train_root = 'data/SN6_full/SAR-PRO'
+data_train_list = 'data/SAR_CD/GF3/split/all_paulis.txt'
+data_train_root = ''
 dataset_type = 'BYOLDataset'
 img_norm_cfg = dict(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 train_pipeline = [
@@ -79,7 +78,7 @@ if not prefetch:
     
 data = dict(
     imgs_per_gpu=32,  # total 32*8
-    workers_per_gpu=12,
+    workers_per_gpu=4,
     train=dict(
         type=dataset_type,
         data_source=dict(
@@ -95,9 +94,8 @@ custom_hooks = [
 ]
 
 # optimizer
-optimizer = dict(type='LARS', lr=0.3, weight_decay=0.000001, 
-                momentum=0.9,
-                paramwise_options={
+optimizer = dict(type='LARS', lr=0.3, weight_decay=0.000001, momentum=0.9,
+                 paramwise_options={
                     '(bn|gn)(\d+)?.(weight|bias)': dict(weight_decay=0., lars_exclude=True),
                     'bias': dict(weight_decay=0., lars_exclude=True)})
 # learning policy

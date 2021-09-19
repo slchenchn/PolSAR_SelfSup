@@ -28,7 +28,8 @@ class PixBYOL(BYOL):
                 base_momentum=0.996,
                 **kwargs):
 
-        super().__init__()
+        super().__init__(backbone, neck, head, pretrained, base_momentum,
+                        **kwargs)
 
 
     def forward_train(self, img, mask, **kargs):

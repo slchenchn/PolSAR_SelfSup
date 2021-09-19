@@ -1,5 +1,13 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-08
+Last Modified: 2021-09-18
+	content: 
+'''
+
 import copy
 _base_ = '../../base.py'
+
 # model settings
 model = dict(
     type='BYOL',
@@ -10,7 +18,7 @@ model = dict(
         depth=50,
         in_channels=3,
         out_indices=[4],  # 0: conv-1, x: stage-x
-        norm_cfg=dict(type='BN')),
+        norm_cfg=dict(type='BN')), 
     neck=dict(
         type='NonLinearNeckV2',
         in_channels=2048,

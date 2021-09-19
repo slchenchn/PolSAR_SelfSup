@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-09
-Last Modified: 2021-09-09
+Last Modified: 2021-09-19
 	content: 
 '''
 from __future__ import division
@@ -15,6 +15,7 @@ import mmcv
 import torch
 from mmcv import Config
 from mmcv.runner import init_dist
+from mmcv.utils import Config, DictAction
 
 from openselfsup import __version__
 from openselfsup.apis import set_random_seed, train_model
@@ -52,6 +53,8 @@ def parse_args():
         default='none',
         help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
+    parser.add_argument(
+        '--options', nargs='+', action=DictAction, help='custom options')
     parser.add_argument('--port', type=int, default=29500,
         help='port only works when launcher=="slurm"')
     args = parser.parse_args()
@@ -65,12 +68,27 @@ def main():
     args = parse_args()
 
     cfg = Config.fromfile(args.config)
+            
+    if args.options is not None:
+        cfg.merge_from_dict(args.options)
     # set cudnn_benchmark
     if cfg.get('cudnn_benchmark', False):
         torch.backends.cudnn.benchmark = True
-    # update configs according to CLI args
+    
+    # remove functional key-value pairs
+    uncessary_cfg_keys = ('deepcopy', 'copy')
+    for k in uncessary_cfg_keys:
+        cfg.pop(k, None)
+        
+    # work_dir is determined in this priority: CLI > segment in file > filename
     if args.work_dir is not None:
+        # update configs according to CLI args if args.work_dir is not None
         cfg.work_dir = args.work_dir
+    elif cfg.get('work_dir', None) is None:
+        # use config filename as default work_dir if cfg.work_dir is None
+        cfg.work_dir = osp.join('./work_dirs',
+                                osp.splitext(osp.basename(args.config))[0])
+
     if args.resume_from is not None:
         cfg.resume_from = args.resume_from
     cfg.gpus = args.gpus
@@ -92,10 +110,13 @@ def main():
         init_dist(args.launcher, **cfg.dist_params)
 
     # create work_dir
-    mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
-    # init the logger before other steps
     timestamp = time.strftime('%Y%m%d_%H%M%S', time.localtime())
-    log_file = osp.join(cfg.work_dir, 'train_{}.log'.format(timestamp))
+    cfg.work_dir = osp.join(cfg.work_dir, timestamp)
+    mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
+    cfg.dump(osp.join(cfg.work_dir, osp.basename(args.config)))
+
+    # init the logger before other steps
+    log_file = osp.join(cfg.work_dir, f'{timestamp}.log')
     logger = get_root_logger(log_file=log_file, log_level=cfg.log_level)
 
     # init the meta dict to record some important information such as
@@ -121,6 +142,7 @@ def main():
         set_random_seed(args.seed, deterministic=args.deterministic)
     cfg.seed = args.seed
     meta['seed'] = args.seed
+    meta['exp_name'] = osp.basename(args.config)
 
     if args.pretrained is not None:
         assert isinstance(args.pretrained, str)

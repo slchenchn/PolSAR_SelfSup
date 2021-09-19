@@ -20,4 +20,5 @@ class PixPredHead(LatentPredictHead):
     ''' Head of pixels-level BYOL
     '''
 
-    def forward(self, input, target)
+    def forward(self, input, target):
+        pass

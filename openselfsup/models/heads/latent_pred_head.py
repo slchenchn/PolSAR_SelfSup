@@ -46,7 +46,7 @@ class LatentPredictHead(nn.Module):
         return dict(loss=loss)
 
 
-@HEADS.register_modulel()
+@HEADS.register_module()
 class LatentClsHead(nn.Module):
     """Head for contrastive learning.
     """

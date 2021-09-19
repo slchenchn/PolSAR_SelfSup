@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-08
+Last Modified: 2021-09-18
+	content: 
+'''
 import inspect
 from functools import partial
 
@@ -76,4 +82,8 @@ def build_from_cfg(cfg, registry, default_args=None):
     if default_args is not None:
         for name, value in default_args.items():
             args.setdefault(name, value)
-    return obj_cls(**args)
+    try:
+        return obj_cls(**args)
+    except Exception as e:
+        # Normal TypeError does not print class name.
+        raise type(e)(f'{obj_cls.__name__}: {e}')
