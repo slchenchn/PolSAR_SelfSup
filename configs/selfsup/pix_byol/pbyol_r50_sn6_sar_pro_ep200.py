@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-19
+Last Modified: 2021-09-22
 	content: 
 '''
 
@@ -65,7 +65,7 @@ train_pipeline = [
     #     p=0.8),
     dict(type='RandomGrayscale', p=0.2),
     dict(
-        type='RandomAppliedTrans',
+        type='RandomAppliedTransOnlyImg',
         transforms=[
             dict(
                 type='BoxBlur',
@@ -94,7 +94,7 @@ data = dict(
     train=dict(
         type=dataset_type,
         data_source=dict(
-            list_file=data_train_list, root=data_train_root,
+            list_file=data_train_list,
             **data_source_cfg),
         pipeline1=train_pipeline1,
         pipeline2=train_pipeline2,

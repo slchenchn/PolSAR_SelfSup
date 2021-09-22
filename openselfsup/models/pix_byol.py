@@ -1,15 +1,16 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-18
+Last Modified: 2021-09-19
 	content: 
 '''
 
 import torch
 from torch import nn
+import numpy as np
+from PIL import Image
 
 from openselfsup.utils import print_log
-
 from . import builder
 from .registry import MODELS
 from .byol import BYOL
@@ -30,7 +31,6 @@ class PixBYOL(BYOL):
 
         super().__init__(backbone, neck, head, pretrained, base_momentum,
                         **kwargs)
-
 
     def forward_train(self, img, mask, **kargs):
         assert img.dim() == 5, f"Input must have 5 dims, got: {img.dim()}"
