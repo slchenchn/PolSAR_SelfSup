@@ -41,13 +41,13 @@ data_source_cfg = dict(
     root = 'data',
     img_dir = 'SN6_full/SAR-PRO',
     ann_dir = 'SN6_sup/slic_mask',
-    type='SARCD',
+    type='SpaceNet6',
     memcached=False,
     return_label=False,
 )
 data_train_list = ['data/SN6_full/train.txt', 
                     'data/SN6_full/test.txt']
-dataset_type = 'BYOLDataset'
+dataset_type = 'PixBYOLDataset'
 img_norm_cfg = dict(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 train_pipeline = [
     dict(type='RandomResizedCrop', size=224),

@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-19
+Last Modified: 2021-09-22
 	content: 
 '''
 
@@ -48,7 +48,7 @@ class PixBYOL(BYOL):
             proj_target_v1 = self.target_net(img_v1)[0].clone().detach()
             proj_target_v2 = self.target_net(img_v2)[0].clone().detach()
 
-        
-        loss = self.head(proj_online_v1, proj_target_v2, mask_v1)['loss'] + \
-               self.head(proj_online_v2, proj_target_v1)['loss']
+        # NOTE: mask should according to target features
+        loss = self.head(proj_online_v1, proj_target_v2, mask_v2)['loss'] + \
+               self.head(proj_online_v2, proj_target_v1, mask_v1)['loss']
         return dict(loss=loss)
