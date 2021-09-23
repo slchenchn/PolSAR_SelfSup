@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-23
+	content: 
+'''
 import random
 import re
 from collections import OrderedDict
@@ -159,8 +165,7 @@ def build_optimizer(model, optimizer_cfg):
                             value = optimizer_cfg[key] * value
                         param_group[key] = value
                         if not dist.is_initialized() or dist.get_rank() == 0:
-                            print_log('paramwise_options -- {}: {}={}'.format(
-                                name, key, value))
+                            print_log(f'paramwise_options -- {name}: {key}={value}', logger=get_root_logger())
 
             # otherwise use the global settings
             params.append(param_group)
@@ -188,7 +193,8 @@ def _dist_train(model, dataset, cfg, logger=None, timestamp=None, meta=None):
     optimizer = build_optimizer(model, cfg.optimizer)
     if 'use_fp16' in cfg and cfg.use_fp16:
         model, optimizer = apex.amp.initialize(model.cuda(), optimizer, opt_level="O1")
-        print_log('**** Initializing mixed precision done. ****')
+        print_log('**** Initializing mixed precision done. ****',
+                logger=get_root_logger())
 
     # put model on gpus
     model = MMDistributedDataParallel(

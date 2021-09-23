@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-09-19
+Last Modified: 2021-09-23
 	content: 
 '''
 
@@ -10,14 +10,14 @@ import os.path as osp
 import mylib.file_utils as fu
 from PIL import Image
 
-from openselfsup.utils import print_log
+from openselfsup.utils import print_log, get_root_logger
 from ..registry import DATASOURCES
 from .utils import McLoader
 from .image_list import ImageList
 
 
-@DATASOURCES.register_module(ImageList)
-class SpaceNet6():
+@DATASOURCES.register_module()
+class SpaceNet6(ImageList):
     ''' Data source of SpacetNet6 
     
     Args:
@@ -28,7 +28,9 @@ class SpaceNet6():
                 img_dir, 
                 ann_dir, 
                 list_file, 
-                memcached=False, 
+                memcached=False,
+                img_suffix='.tif',
+                ann_suffix='.png',
                 mclient_path=None, 
                 return_label=True):
 
@@ -36,6 +38,8 @@ class SpaceNet6():
         self.ann_dir = ann_dir
         self.data_root = root
         self.list_file = list_file
+        self.img_suffix = img_suffix
+        self.ann_suffix = ann_suffix
 
         # join paths if data_root is specified
         if self.data_root is not None:
@@ -45,33 +49,38 @@ class SpaceNet6():
                 self.ann_dir = osp.join(self.data_root, self.ann_dir)
 
         assert osp.isdir(root), f'wrong data root of {root}'
-        assert osp.isdir(img_dir), f'wrong image dir of {img_dir}'
-        assert osp.isdir(ann_dir), f'wrong annotation dir of {ann_dir}'
+        assert osp.isdir(self.img_dir), f'wrong image dir of {self.img_dir}'
+        assert osp.isdir(self.ann_dir), f'wrong annotation dir of {self.ann_dir}'
 
         self.fns = []
         if isinstance(list_file, str):
             list_file = [list_file]
         for fi in list_file:
             self.fns.extend(fu.read_file_as_list(fi))
+        self.fns = [fn.split('.')[0] for fn in self.fns]
 
         self.memcached = memcached
         self.mclient_path = mclient_path
         self.initialized = False
         self.return_label = return_label
 
-        self._init_memcached()
-        print_log(f'totally {len(self.fns)} training sampls')
+        if memcached:
+            self._init_memcached()
+        print_log(f'totally {len(self.fns)} training sampls',
+                logger=get_root_logger())
 
     def get_sample(self, idx):
         if self.memcached:
             raise NotImplementedError
         else:
-            img = Image.open(osp.join(self.img_dir, self.fns[idx]))
+            img_path = osp.join(self.img_dir, self.fns[idx]+self.img_suffix)
+            img = Image.open(img_path)
 
         img = img.convert('RGB')
         
         if self.return_label:
-            label = Image.open(osp.join(self.ann_dir, self.fns[idx]))
+            label_path = osp.join(self.ann_dir, self.fns[idx]+self.ann_suffix)
+            label = Image.open(label_path)
             return img, label
         else:
             return img

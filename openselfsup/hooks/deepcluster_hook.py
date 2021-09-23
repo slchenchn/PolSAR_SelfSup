@@ -1,12 +1,18 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-23
+	content: 
+'''
+
+
 import numpy as np
-
 from mmcv.runner import Hook
-
 import torch
 import torch.distributed as dist
 
 from openselfsup.third_party import clustering as _clustering
-from openselfsup.utils import print_log
+from openselfsup.utils import print_log, get_root_logger
 from .registry import HOOKS
 from .extractor import Extractor
 
@@ -121,4 +127,4 @@ class DeepClusterHook(Hook):
                 "empty_num: {}\tmin_cluster: {}\tmax_cluster:{}".format(
                     empty_cls.item(), minimal_cls_size.item(),
                     maximal_cls_size.item()),
-                logger='root')
+                logger=get_root_logger())

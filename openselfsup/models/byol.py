@@ -1,13 +1,13 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-22
+Last Modified: 2021-09-23
 	content: 
 '''
 import torch
 import torch.nn as nn
 
-from openselfsup.utils import print_log
+from openselfsup.utils import print_log, get_root_logger
 
 from . import builder
 from .registry import MODELS
@@ -59,9 +59,11 @@ class BYOL(nn.Module):
                 Default: None.
         """
         if pretrained is not None:
-            print_log('load model from: {}'.format(pretrained), logger='root')
+            print_log('load model from: {pretrained}',
+                    logger=get_root_logger())
         else:
-            print_log(f'load model from None, traning from scratch')
+            print_log(f'load model from None, traning from scratch',
+                    logger=get_root_logger())
 
         self.online_net[0].init_weights(pretrained=pretrained) # backbone
         self.online_net[1].init_weights(init_linear='kaiming') # projection

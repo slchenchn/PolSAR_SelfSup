@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-22
+Last Modified: 2021-09-23
 	content: 
 '''
 
@@ -43,15 +43,20 @@ data_source_cfg = dict(
     ann_dir = 'SN6_sup/slic_mask',
     type='SpaceNet6',
     memcached=False,
-    return_label=False,
+    return_label=True,
 )
 data_train_list = ['data/SN6_full/train.txt', 
-                    'data/SN6_full/test.txt']
+                    # 'data/SN6_full/test.txt'
+                    ]
+                    
 dataset_type = 'PixBYOLDataset'
 img_norm_cfg = dict(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 train_pipeline = [
+    # dict(type='ViewImgLabels'),
     dict(type='RandomResizedCrop', size=224),
+    # dict(type='ViewImgLabels'),
     dict(type='RandomHorizontalFlip'),
+    # dict(type='ViewImgLabels'),
     # dict(
     #     type='RandomAppliedTrans',
     #     transforms=[
@@ -63,7 +68,8 @@ train_pipeline = [
     #             hue=0.1)
     #     ],
     #     p=0.8),
-    dict(type='RandomGrayscale', p=0.2),
+    dict(type='IMRandomGrayscale', p=0.2),
+    # dict(type='ViewImgLabels'),
     dict(
         type='RandomAppliedTransOnlyImg',
         transforms=[
@@ -74,6 +80,7 @@ train_pipeline = [
                 )
         ],
         p=1.),
+    # dict(type='ViewImgLabels'),
     # dict(type='RandomAppliedTrans',
     #      transforms=[dict(type='Solarization')], p=0.),
 ]
@@ -82,7 +89,10 @@ train_pipeline = [
 prefetch = False
 if not prefetch:
     train_pipeline.extend([dict(type='ToTensor'), 
-                            dict(type='Normalize', **img_norm_cfg)])
+                    dict(type='IMNormalize', **img_norm_cfg),
+                    # dict(type='ViewImgLabels', **img_norm_cfg),
+    ])
+
 train_pipeline1 = deepcopy(train_pipeline)
 train_pipeline2 = deepcopy(train_pipeline)
 train_pipeline2[3]['p'] = 0.1 # box blur TODO: add gaussian blur
@@ -92,6 +102,7 @@ data = dict(
     imgs_per_gpu=32,  # total 32*8
     workers_per_gpu=12,
     train=dict(
+        if_visualize=True, 
         type=dataset_type,
         data_source=dict(
             list_file=data_train_list,

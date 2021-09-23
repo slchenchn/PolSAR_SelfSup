@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-09-22
+Last Modified: 2021-09-23
 	content: 
 '''
 import torch
@@ -11,6 +11,7 @@ import numpy as np
 from PIL import Image
 
 from openselfsup.utils import build_from_cfg
+from openselfsup.datasets.pipelines import ComposeWithVisualization
 from .registry import DATASETS, PIPELINES
 from .builder import build_datasource
 from .byol import BYOLDataset
@@ -23,11 +24,21 @@ class PixBYOLDataset(BYOLDataset):
     """ Dataset for PixBYOL
     """
 
-    def __init__(self, return_label=True, **kargs):
-        super().__init__(return_label, **kargs)
+    def __init__(self, data_source, pipeline1, pipeline2, 
+                prefetch=False, 
+                if_visualize=False):
+        self.data_source = build_datasource(data_source)
+        pipeline1 = [build_from_cfg(p, PIPELINES) for p in pipeline1]
+        pipeline2 = [build_from_cfg(p, PIPELINES) for p in pipeline2]
+        self.prefetch = prefetch
+
+        self.pipeline1 = ComposeWithVisualization(pipeline1,
+                                                if_visualize=if_visualize)
+        self.pipeline2 = ComposeWithVisualization(pipeline2,
+                                                if_visualize=if_visualize)
 
     @staticmethod
-    def cat_pil_images(self, images, axis):
+    def cat_pil_images(images, axis):
         arrays = [np.asarray(img) for img in images]
         arrays = [arr if arr.ndim==3 else arr[..., None] for arr in arrays]
         array = np.concatenate(arrays, axis=axis)

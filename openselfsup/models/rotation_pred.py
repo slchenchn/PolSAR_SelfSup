@@ -1,8 +1,13 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-23
+	content: 
+'''
 import torch
 import torch.nn as nn
 
-from openselfsup.utils import print_log
-
+from openselfsup.utils import print_log, get_root_logger
 from . import builder
 from .registry import MODELS
 
@@ -35,7 +40,8 @@ class RotationPred(nn.Module):
                 Default: None.
         """
         if pretrained is not None:
-            print_log('load model from: {}'.format(pretrained), logger='root')
+            print_log('load model from: {pretrained}',
+                    logger=get_root_logger())
         self.backbone.init_weights(pretrained=pretrained)
         self.head.init_weights(init_linear='kaiming')
 

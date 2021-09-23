@@ -1,13 +1,13 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-18
+Last Modified: 2021-09-23
 	content: 
 '''
 import os
 from PIL import Image
 
-from openselfsup.utils import print_log
+from openselfsup.utils import print_log, get_root_logger
 from ..registry import DATASOURCES
 from .utils import McLoader
 
@@ -42,7 +42,8 @@ class ImageList(object):
         self.mclient_path = mclient_path
         self.initialized = False
 
-        print_log(f'totally {len(self.fns)} training sampls')
+        print_log(f'totally {len(self.fns)} training sampls',
+                logger=get_root_logger())
 
     def _init_memcached(self):
         if not self.initialized:

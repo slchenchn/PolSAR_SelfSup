@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-09
-Last Modified: 2021-09-19
+Last Modified: 2021-09-23
 	content: 
 '''
 from __future__ import division
@@ -133,7 +133,7 @@ def main():
 
     # log some basic info
     logger.info('Distributed training: {}'.format(distributed))
-    logger.info('Config:\n{}'.format(cfg.text))
+    logger.info('Config:\n{}'.format(cfg.pretty_text))
 
     # set random seeds
     if args.seed is not None:

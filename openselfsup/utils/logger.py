@@ -1,6 +1,15 @@
-import logging
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-23
+	content: 
+'''
 
+
+import logging
 from mmcv.runner import get_dist_info
+from mmcv.utils import get_logger
+
 
 
 def get_root_logger(log_file=None, log_level=logging.INFO):
@@ -9,7 +18,7 @@ def get_root_logger(log_file=None, log_level=logging.INFO):
     The logger will be initialized if it has not been initialized. By default a
     StreamHandler will be added. If `log_file` is specified, a FileHandler will
     also be added. The name of the root logger is the top-level package name,
-    e.g., "openselfsup".
+    e.g., "mmseg".
 
     Args:
         log_file (str | None): The log filename. If specified, a FileHandler
@@ -21,22 +30,9 @@ def get_root_logger(log_file=None, log_level=logging.INFO):
     Returns:
         logging.Logger: The root logger.
     """
-    logger = logging.getLogger(__name__.split('.')[0])  # i.e., openselfsup
-    # if the logger has been initialized, just return it
-    if logger.hasHandlers():
-        return logger
 
-    format_str = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    logging.basicConfig(format=format_str, level=log_level)
-    rank, _ = get_dist_info()
-    if rank != 0:
-        logger.setLevel('ERROR')
-    elif log_file is not None:
-        file_handler = logging.FileHandler(log_file, 'w')
-        file_handler.setFormatter(logging.Formatter(format_str))
-        file_handler.setLevel(log_level)
-        logger.addHandler(file_handler)
-
+    logger = get_logger(name='openselfsup', log_file=log_file,
+                        log_level=log_level)
     return logger
 
 

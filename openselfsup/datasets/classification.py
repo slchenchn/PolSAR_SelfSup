@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-18
+Last Modified: 2021-09-23
 	content: 
 '''
 import torch
@@ -45,6 +45,5 @@ class ClassificationDataset(BaseDataset):
             eval_res["{}_top{}".format(keyword, k)] = acc
             if logger is not None and logger != 'silent':
                 print_log(
-                    "{}_top{}: {:.03f}".format(keyword, k, acc),
-                    logger=logger)
+                    "{keyword}_top{k}: {acc:.03f}", logger=logger)
         return eval_res
