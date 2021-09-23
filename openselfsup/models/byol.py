@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-18
+Last Modified: 2021-09-22
 	content: 
 '''
 import torch
@@ -83,18 +83,25 @@ class BYOL(nn.Module):
     def momentum_update(self):
         self._momentum_update()
 
-    def forward_train(self, img, **kwargs):
+    def forward_train(self, img, mask, **kwargs):
         """
         Args:
-            img (Tensor): Input of two concatenated images of shape (N, 2, C, H, W).
-                Typically these should be mean centered and std scaled.
+            img (Tensor): Input of two concatenated images of shape (N, 2, C,
+                H, W). Typically these should be mean centered and std scaled.
+            mask (Tensor): superpixel mask on shape (N, 2, H, W)
 
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
         """
-        assert img.dim() == 5, f"Input must have 5 dims, got: {img.dim()}"
+
+        assert img.dim() == 5, f"images must have 5 dims, got: {img.dim()}"
+        assert mask.dim() == 4, f"masks must have 4 dims, got: {mask.dim()}"
+
         img_v1 = img[:, 0, ...].contiguous()
         img_v2 = img[:, 1, ...].contiguous()
+        mask_v1 = mask[:, 0, ...].contiguous()
+        mask_v2 = mask[:, 1, ...].contiguous()
+
         # compute query features
         proj_online_v1 = self.online_net(img_v1)[0]
         proj_online_v2 = self.online_net(img_v2)[0]

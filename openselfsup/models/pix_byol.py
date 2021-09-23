@@ -1,15 +1,16 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-18
+Last Modified: 2021-09-22
 	content: 
 '''
 
 import torch
 from torch import nn
+import numpy as np
+from PIL import Image
 
 from openselfsup.utils import print_log
-
 from . import builder
 from .registry import MODELS
 from .byol import BYOL
@@ -31,7 +32,6 @@ class PixBYOL(BYOL):
         super().__init__(backbone, neck, head, pretrained, base_momentum,
                         **kwargs)
 
-
     def forward_train(self, img, mask, **kargs):
         assert img.dim() == 5, f"Input must have 5 dims, got: {img.dim()}"
         img_v1 = img[:, 0, ...].contiguous()
@@ -48,7 +48,7 @@ class PixBYOL(BYOL):
             proj_target_v1 = self.target_net(img_v1)[0].clone().detach()
             proj_target_v2 = self.target_net(img_v2)[0].clone().detach()
 
-        
-        loss = self.head(proj_online_v1, proj_target_v2, mask_v1)['loss'] + \
-               self.head(proj_online_v2, proj_target_v1)['loss']
+        # NOTE: mask should according to target features
+        loss = self.head(proj_online_v1, proj_target_v2, mask_v2)['loss'] + \
+               self.head(proj_online_v2, proj_target_v1, mask_v1)['loss']
         return dict(loss=loss)
