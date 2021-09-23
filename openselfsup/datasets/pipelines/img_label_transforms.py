@@ -25,41 +25,62 @@ def split_img_mask(img_mask):
     ''' Split image and mask, where image has 3 channels, mask has one channels
 
     Returns:
-        PIL Image objects
+        PIL Image objects or Tensor
     '''
     if isinstance(img_mask, Image.Image):
         img_mask = np.asarray(img_mask)
 
-    assert img_mask.ndim==3, f'img_mask variable should has ndim=3, got {img_mask.ndim}'
-    assert img_mask.shape[-1]==4, f'img_mask variable should has #channels=4,\
-                                    got {img_mask.shape[-1]} '
-    
-    img = img_mask[..., :3]
-    mask = img_mask[..., -1]
-    return Image.fromarray(img), mask
+    if isinstance(img_mask, ndarray):
+        ''' shape of [H, W, C] '''
+        assert img_mask.ndim==3, f'img_mask variable should has ndim=3, got {img_mask.ndim}'
+        assert img_mask.shape[-1]==4, f'img_mask variable should has #channels=4, got {img_mask.shape[-1]} '
+        
+        img = img_mask[..., :3]
+        mask = img_mask[..., -1]
+        img = Image.fromarray(img)
+        mask = Image.fromarray(mask)
+    elif isinstance(img_mask, Tensor):
+        ''' shape of [C, H, W] '''
+        assert img_mask.ndim==3, f'img_mask variable should has ndim=3, got {img_mask.ndim}'
+        assert img_mask.shape[0]==4, f'img_mask variable should has #channels=4, got {img_mask.shape[0]} '
+        
+        img = img_mask[:3, ...]
+        mask = img_mask[3, ...]
+    else:
+        raise NotImplementedError
+
+    return img, mask
 
 
 def merge_img_mask(img, mask):
     ''' Merge image and mask, where image has 3 channels, mask has one channels
 
     Returns:
-        PIL Image object
+        PIL Image object or Tensor
     '''
-    if isinstance(img, Image):
+    if isinstance(img, Image.Image):
         img = np.asarray(img)
-    if isinstance(mask, Image):
         mask = np.asarray(mask)
-    if mask.ndim==2:
-        mask = mask[..., None]
+        if mask.ndim==2:
+            mask = mask[..., None]
 
-    assert mask.ndim==3 and img.ndim==3, f'img and mask should has ndim=3, \
-                    got img.ndim={img.ndim}, mask.ndim={mask.ndim}'
-    assert mask.shape[-1]==1 and img.shape[-1]==3, f'img and mask should has \
-        #channels=3 and 1 got mask.#channels={mask.shape[-1]}, img.#channels={img.shape[-1]} '
-    
-    img_mask = np.concatenate((img, mask), axis=-1)
+        assert mask.ndim==img.ndim==3, f'img and mask should has ndim=3, got img.ndim={img.ndim}, mask.ndim={mask.ndim}'
+        assert mask.shape[2]==1 and img.shape[2]==3, f'img and mask should has #channels=3 and 1 got mask.#channels={mask.shape[2]}, img.#channels={img.shape[2]} '
+        
+        img_mask = np.concatenate((img, mask), axis=-1)
+        img_mask = Image.fromarray(img_mask)
+    elif isinstance(img, Tensor):
+        if mask.ndim==2:
+            mask = mask[None, ...]
 
-    return Image.fromarray(img_mask)
+        assert mask.ndim==img.ndim==3, f'img and mask should has ndim=3, got img.ndim={img.ndim}, mask.ndim={mask.ndim}'
+        assert mask.shape[0]==1 and img.shape[0]==3, f'img and mask should has #channels=3 and 1 got mask.#channels={mask.shape[0]}, img.#channels={img.shape[0]} '
+
+        img_mask = torch.cat((img, mask), dim=0)
+    else:
+        raise NotImplementedError
+        
+    return img_mask
 
 
 @PIPELINES.register_module()
@@ -139,4 +160,39 @@ class IMNormalize(_transforms.Normalize):
         img, mask = split_img_mask(img_mask)
         normed = super().forward(img)
         img_mask = merge_img_mask(normed, mask)
+        return img_mask
+
+
+@PIPELINES.register_module()
+class IMRandomResizedCrop(_transforms.RandomResizedCrop):
+    '''Crop a random portion of image and mask, and resize it to a given size.
+
+    NOTE: interpolation methods of image is bilinear, of mask is nearest
+    '''
+
+    def forward(self, img_mask):
+        assert isinstance(img_mask, Image.Image)
+        img, mask = split_img_mask(img_mask)
+        
+        i, j, h, w = self.get_params(img, self.scale, self.ratio)
+        new_img = _transF.resized_crop(img, i, j, h, w, self.size,
+                                        interpolation=self.interpolation)
+        new_mask = _transF.resized_crop(mask, i, j, h, w, self.size,
+                            interpolation=_transF.InterpolationMode.NEAREST)
+
+        img_mask = merge_img_mask(new_img, new_mask)
+        return img_mask
+
+@PIPELINES.register_module()
+class IMToTensor(_transforms.ToTensor):
+    '''Convert a ``PIL Image`` or ``numpy.ndarray`` to tensor. This transform does not support torchscript.
+    '''
+
+    def __call__(self, img_mask):
+        img, mask = split_img_mask(img_mask)
+        new_img = super().__call__(img)
+
+        new_mask = np.expand_dims(np.asarray(mask), 0)
+        new_mask = torch.from_numpy(new_mask).contiguous()
+        img_mask = merge_img_mask(new_img, new_mask)
         return img_mask

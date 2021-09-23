@@ -53,7 +53,7 @@ dataset_type = 'PixBYOLDataset'
 img_norm_cfg = dict(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 train_pipeline = [
     # dict(type='ViewImgLabels'),
-    dict(type='RandomResizedCrop', size=224),
+    dict(type='IMRandomResizedCrop', size=224),
     # dict(type='ViewImgLabels'),
     dict(type='RandomHorizontalFlip'),
     # dict(type='ViewImgLabels'),
@@ -74,10 +74,14 @@ train_pipeline = [
         type='RandomAppliedTransOnlyImg',
         transforms=[
             dict(
-                type='BoxBlur',
-                radius_min=0,
-                radius_max=4,
-                )
+                type='GaussianBlur',
+                sigma_min=0.1,
+                sigma_max=2.0),
+            # dict(
+            #     type='BoxBlur',
+            #     radius_min=0,
+            #     radius_max=3,
+            #     )
         ],
         p=1.),
     # dict(type='ViewImgLabels'),
@@ -88,7 +92,7 @@ train_pipeline = [
 # prefetch
 prefetch = False
 if not prefetch:
-    train_pipeline.extend([dict(type='ToTensor'), 
+    train_pipeline.extend([dict(type='IMToTensor'), 
                     dict(type='IMNormalize', **img_norm_cfg),
                     # dict(type='ViewImgLabels', **img_norm_cfg),
     ])

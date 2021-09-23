@@ -12,7 +12,10 @@ from torchvision.transforms import Compose
 import torchvision.transforms.functional as _transF
 import mylib.labelme_utils as lu
 import numpy as np
+import torch
+from torch import Tensor
 
+from PIL import Image
 from ..registry import PIPELINES
 from .img_label_transforms import split_img_mask
 
@@ -29,8 +32,8 @@ class ComposeWithVisualization(Compose):
     def __init__(self, 
                 *args,
                 if_visualize=False,
-                mean=None,
-                std=None,
+                mean=[0.485, 0.456, 0.406],
+                std=[0.229, 0.224, 0.225],
                 save_dir='tmp',
                 **kargs):
         super().__init__(*args, **kargs)
@@ -49,6 +52,17 @@ class ComposeWithVisualization(Compose):
            dict: Transformed data.
         """
 
+
+        if self.if_visualize:
+
+            print(f'original')
+            img_path = osp.join(self.save_dir, 'original_img.png')
+            gt_path = osp.join(self.save_dir, 'original_gt.png')
+            
+            img, mask = split_img_mask(data)
+            lu.lblsave(gt_path, np.asarray(mask))
+            img.save(img_path)
+
         for t in self.transforms:
             data = t(data)
             if data is None:
@@ -56,29 +70,31 @@ class ComposeWithVisualization(Compose):
             
             if self.if_visualize \
                 and (type(t).__name__!='LoadImagesFromFile') \
-                and (type(t).__name__!='DefaultFormatBundle') :
+                and (type(t).__name__!='DefaultFormatBundle') \
+                and (type(t).__name__!='IMToTensor'):
 
                 print(type(t).__name__)
                 img_path = osp.join(self.save_dir, type(t).__name__+'_img.png')
                 gt_path = osp.join(self.save_dir, type(t).__name__+'_gt.png')
                 
                 img, mask = split_img_mask(data)
-                lu.lblsave(gt_path, mask)
+                lu.lblsave(gt_path, np.asarray(mask))
 
                 if np.asarray(img).dtype == np.uint8:
                     ''' Not normalized '''
-                    assert (self.mean is None) and (self.std is None), \
-                        f'should not un-normalize here'
                     img.save(img_path)
+
                 elif np.asarray(img).dtype == np.float32:
-                    ''' Normalized '''
-                    assert (self.mean is not None) and (self.std is not None),\
-                        f'should un-normalize here'
+                    ''' Normalized Tensor '''
+                    assert (self.mean is not None) and (self.std is not None), f'mean or std are not given'
+                    self.mean = Tensor(self.mean)
+                    self.std = Tensor(self.std)
                     unnorm_mean = -self.mean / self.std
                     unnorm_std = 1.0 / self.std
                     unnormed_img = _transF.normalize(img, unnorm_mean,
                                                 unnorm_std, inplace=False)
-                    unnormed_img.save(img_path)
+                    unnormed_img = (unnormed_img*255).numpy().astype(np.uint8).transpose(1, 2, 0)
+                    Image.fromarray(unnormed_img).save(img_path)
                 else:
                     raise NotImplementedError
 

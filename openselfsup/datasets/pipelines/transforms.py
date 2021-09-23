@@ -123,7 +123,10 @@ class Solarization(object):
 @PIPELINES.register_module()
 class BoxBlur():
     ''' Boxcar filtering 
-    NOTE: radis=1 means 3x3 average filtering
+
+    Args:
+        radius (int): Size of the box in one direction
+            NOTE: radis=1 means 3x3 average filtering
     '''
 
     def __init__(self, radius_max, radius_min) -> None:
@@ -134,3 +137,4 @@ class BoxBlur():
         radius = np.random.randint(self.radius_min, self.radius_max)
         img = img.filter(ImageFilter.BoxBlur(radius))
         return img
+ 

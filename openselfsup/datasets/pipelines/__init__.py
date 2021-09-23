@@ -8,5 +8,5 @@ Last Modified: 2021-09-23
 
 from .transforms import *
 from .img_label_transforms import (IMRandomGrayscale,
-							RandomAppliedTransOnlyImg, ViewImgLabels, IMNormalize)
+							RandomAppliedTransOnlyImg, ViewImgLabels, IMNormalize, IMRandomResizedCrop, IMToTensor)
 from .compose_with_visualization import ComposeWithVisualization
