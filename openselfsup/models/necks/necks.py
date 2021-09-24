@@ -1,16 +1,17 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-18
+Last Modified: 2021-09-23
 	content: 
 '''
+
 import torch
 import torch.nn as nn
 from packaging import version
 from mmcv.cnn import kaiming_init, normal_init
 
-from .registry import NECKS
-from .utils import build_norm_layer
+from ..registry import NECKS
+from ..utils import build_norm_layer
 
 
 def _init_weights(module, init_linear='normal', std=0.01, bias=0.):
@@ -231,6 +232,7 @@ class NonLinearNeckV2(nn.Module):
     def forward(self, x):
         assert len(x) == 1, \
                 f"expect len of inputs feautes to be 1, Got: {len(x)}"
+        x = x[0]
         if self.with_avg_pool:
             x = self.avgpool(x)
         return [self.mlp(x.view(x.size(0), -1))]

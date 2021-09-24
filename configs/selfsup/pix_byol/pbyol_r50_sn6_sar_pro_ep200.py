@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-23
+Last Modified: 2021-09-24
 	content: 
 '''
 
@@ -24,17 +24,17 @@ model = dict(
         strides=(1, 2, 1, 1),
         ),
     neck=dict(
-        type='NonLinearNeckV2',
+        type='NonLinear1x1ConvNeck',
         # olive-shaped projector
         in_channels=2048,
         hid_channels=4096,
         out_channels=256,
-        with_avg_pool=False),
+        ),
     head=dict(type='PixPredHead',
               size_average=True,
-              predictor=dict(type='NonLinearNeckV2',
+              predictor=dict(type='NonLinear1x1ConvNeck',
                              in_channels=256, hid_channels=4096,
-                             out_channels=256, with_avg_pool=False)))
+                             out_channels=256)))
                              
 # dataset settings
 data_source_cfg = dict(
@@ -103,10 +103,10 @@ train_pipeline2[3]['p'] = 0.1 # box blur TODO: add gaussian blur
 # train_pipeline2[5]['p'] = 0.2 # solarization
     
 data = dict(
-    imgs_per_gpu=32,  # total 32*8
-    workers_per_gpu=12,
+    imgs_per_gpu=4,    # total 32*8
+    workers_per_gpu=4,
     train=dict(
-        if_visualize=True, 
+        # if_visualize=True, 
         type=dataset_type,
         data_source=dict(
             list_file=data_train_list,
@@ -127,6 +127,7 @@ optimizer = dict(type='LARS', lr=0.3, weight_decay=0.000001,
                 paramwise_options={
                     '(bn|gn)(\d+)?.(weight|bias)': dict(weight_decay=0., lars_exclude=True),
                     'bias': dict(weight_decay=0., lars_exclude=True)})
+                    
 # learning policy
 lr_config = dict(
     policy='CosineAnnealing',

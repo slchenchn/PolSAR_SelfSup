@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-18
+Last Modified: 2021-09-23
 	content: 
 '''
 
@@ -30,7 +30,7 @@ class BYOLHook(Hook):
         self.update_interval = update_interval
 
     def before_train_iter(self, runner):
-        # QUERY: what does `module` mean
+        # NOTE: all models are inherited from nn.Module class
         assert hasattr(runner.model.module, 'momentum'), \
             "The runner must have attribute \"momentum\" in BYOLHook."
         assert hasattr(runner.model.module, 'base_momentum'), \

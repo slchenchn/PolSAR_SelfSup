@@ -56,7 +56,7 @@ class PixBYOLDataset(BYOLDataset):
         img1, mask1 = split_img_mask(img_label1)
         img2, mask2 = split_img_mask(img_label2)
         img_cat = torch.cat((img1.unsqueeze(0), img2.unsqueeze(0)), dim=0)
-        mask_cat = torch.cat((mask1.unsqueeze(0), mask2.unsqueeze(0)), dim=0)
+        mask_cat = torch.cat((mask1.unsqueeze(0), mask2.unsqueeze(0)), dim=0).type(torch.int)
         return dict(img=img_cat, mask=mask_cat)
 
     def evaluate(self, scores, keyword, logger=None, **kwargs):
