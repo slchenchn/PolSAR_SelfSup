@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-19
+Last Modified: 2021-09-24
 	content: 
 '''
 
@@ -69,5 +69,6 @@ class SN6SARProDataset(CustomDataset):
                 img_infos.append(img_info)
             img_infos = sorted(img_infos, key=lambda x: x['filename'])
 
+        # TODO: it seems that get_root_logger() doesn't work
         print_log(f'Loaded {len(img_infos)} images', logger=get_root_logger())
         return img_infos

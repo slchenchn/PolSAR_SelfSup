@@ -103,8 +103,8 @@ train_pipeline2[3]['p'] = 0.1 # box blur TODO: add gaussian blur
 # train_pipeline2[5]['p'] = 0.2 # solarization
     
 data = dict(
-    imgs_per_gpu=4,    # total 32*8
-    workers_per_gpu=4,
+    imgs_per_gpu=8,    # total 32*8
+    workers_per_gpu=8,
     train=dict(
         # if_visualize=True, 
         type=dataset_type,
