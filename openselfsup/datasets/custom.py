@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-09-19
+Last Modified: 2021-09-25
 	content: adapted from mmseg
     NOTE: not done
 '''
@@ -107,7 +107,7 @@ class CustomDataset(Dataset):
                 img_infos.append(img_info)
             img_infos = sorted(img_infos, key=lambda x: x['filename'])
 
-        print_log(f'Loaded {len(img_infos)} images', logger=get_root_logger())
+        print_log(f'Loaded {len(img_infos)} images', logger='openselfsup')
         return img_infos
 
     def get_ann_info(self, idx):

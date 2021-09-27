@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-09-23
+Last Modified: 2021-09-25
 	content: 
 '''
 
@@ -67,7 +67,7 @@ class SpaceNet6(ImageList):
         if memcached:
             self._init_memcached()
         print_log(f'totally {len(self.fns)} training sampls',
-                logger=get_root_logger())
+                logger='openselfsup')
 
     def get_sample(self, idx):
         if self.memcached:

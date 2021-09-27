@@ -1,3 +1,10 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-25
+	content: 
+'''
+
 from .accuracy import Accuracy, accuracy
 from .conv_module import ConvModule, build_conv_layer
 from .conv_ws import ConvWS2d, conv_ws_2d
@@ -5,6 +12,7 @@ from .gather_layer import GatherLayer
 from .multi_pooling import MultiPooling
 from .norm import build_norm_layer
 from .scale import Scale
+from .res_layer import ResLayer
 #from .weight_init import (bias_init_with_prob, kaiming_init, normal_init,
 #                          uniform_init, xavier_init)
 from .sobel import Sobel

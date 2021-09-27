@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-09
-Last Modified: 2021-09-23
+Last Modified: 2021-09-27
 	content: 
 '''
 from __future__ import division
@@ -148,7 +148,8 @@ def main():
         assert isinstance(args.pretrained, str)
         cfg.model.pretrained = args.pretrained
     model = build_model(cfg.model)
-
+    logger.info(model)
+    
     datasets = [build_dataset(cfg.data.train)]
     assert len(cfg.workflow) == 1, "Validation is called by hook."
     if cfg.checkpoint_config is not None:

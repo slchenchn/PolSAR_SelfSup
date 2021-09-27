@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-23
+Last Modified: 2021-09-25
 	content: 
 '''
 import torch
@@ -45,7 +45,7 @@ class RelativeLoc(nn.Module):
         """
         if pretrained is not None:
             print_log('load model from: {pretrained}',
-                    logger=get_root_logger())
+                    logger='openselfsup')
         self.backbone.init_weights(pretrained=pretrained)
         self.neck.init_weights(init_linear='normal')
         self.head.init_weights(init_linear='normal', std=0.005)

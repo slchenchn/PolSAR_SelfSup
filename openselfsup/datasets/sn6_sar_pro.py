@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-24
+Last Modified: 2021-09-25
 	content: 
 '''
 
@@ -70,5 +70,5 @@ class SN6SARProDataset(CustomDataset):
             img_infos = sorted(img_infos, key=lambda x: x['filename'])
 
         # TODO: it seems that get_root_logger() doesn't work
-        print_log(f'Loaded {len(img_infos)} images', logger=get_root_logger())
+        print_log(f'Loaded {len(img_infos)} images', logger='openselfsup')
         return img_infos

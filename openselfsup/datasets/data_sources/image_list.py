@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-23
+Last Modified: 2021-09-25
 	content: 
 '''
 import os
@@ -43,7 +43,7 @@ class ImageList(object):
         self.initialized = False
 
         print_log(f'totally {len(self.fns)} training sampls',
-                logger=get_root_logger())
+                logger='openselfsup')
 
     def _init_memcached(self):
         if not self.initialized:

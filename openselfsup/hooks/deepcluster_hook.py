@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-23
+Last Modified: 2021-09-25
 	content: 
 '''
 
@@ -127,4 +127,4 @@ class DeepClusterHook(Hook):
                 "empty_num: {}\tmin_cluster: {}\tmax_cluster:{}".format(
                     empty_cls.item(), minimal_cls_size.item(),
                     maximal_cls_size.item()),
-                logger=get_root_logger())
+                logger='openselfsup')

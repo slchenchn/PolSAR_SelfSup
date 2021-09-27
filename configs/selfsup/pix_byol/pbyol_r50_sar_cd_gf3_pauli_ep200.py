@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-19
+Last Modified: 2021-09-25
 	content: 
 '''
 
@@ -13,7 +13,7 @@ model = dict(
     pretrained=None,
     base_momentum=0.996,
     backbone=dict(
-        type='ResNet',
+        type='ResNetV1c',
         depth=50,
         in_channels=3,
         out_indices=[4],  # 0: conv-1, x: stage-x

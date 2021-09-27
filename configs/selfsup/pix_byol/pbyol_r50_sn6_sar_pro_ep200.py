@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-24
+Last Modified: 2021-09-27
 	content: 
 '''
 
@@ -14,10 +14,10 @@ model = dict(
     pretrained=None,
     base_momentum=0.996,
     backbone=dict(
-        type='ResNet',
+        type='ResNetV1c',
         depth=50,
         in_channels=3,
-        out_indices=[4],  # 0: conv-1, x: stage-x
+        out_indices=[4],  # x: stage-x + 1
         norm_cfg=dict(type='BN'),
         # set output stride=8
         dilations=(1, 1, 2, 4),
@@ -118,7 +118,7 @@ data = dict(
     
 # additional hooks
 custom_hooks = [
-    dict(type='BYOLHook', end_momentum=1.)
+    dict(type='BYOLHook', end_momentum=1., add_to_tb=True)
 ]
 
 # optimizer

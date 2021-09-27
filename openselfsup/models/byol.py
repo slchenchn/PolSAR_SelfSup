@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-23
+Last Modified: 2021-09-27
 	content: 
 '''
 import torch
@@ -60,10 +60,10 @@ class BYOL(nn.Module):
         """
         if pretrained is not None:
             print_log('load model from: {pretrained}',
-                    logger=get_root_logger())
+                    logger='openselfsup')
         else:
             print_log(f'load model from None, traning from scratch',
-                    logger=get_root_logger())
+                    logger='openselfsup')
 
         self.online_net[0].init_weights(pretrained=pretrained) # backbone
         self.online_net[1].init_weights(init_linear='kaiming') # projection
@@ -114,7 +114,7 @@ class BYOL(nn.Module):
 
         loss = self.head(proj_online_v1, proj_target_v2)['loss'] + \
                self.head(proj_online_v2, proj_target_v1)['loss']
-        return dict(loss=loss)
+        return dict(loss=loss, byol_momentum=self.momentum)
 
     def forward_test(self, img, **kwargs):
         pass
