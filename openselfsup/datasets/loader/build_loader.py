@@ -1,3 +1,9 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-27
+	content: 
+'''
 import platform
 import random
 import torch
@@ -27,6 +33,7 @@ def build_dataloader(dataset,
                      shuffle=True,
                      replace=False,
                      seed=None,
+                     pin_memory=True,
                      **kwargs):
     """Build PyTorch DataLoader.
 
@@ -76,7 +83,7 @@ def build_dataloader(dataset,
         sampler=sampler,
         num_workers=num_workers,
         collate_fn=partial(collate, samples_per_gpu=imgs_per_gpu),
-        pin_memory=False,
+        pin_memory=pin_memory,
         worker_init_fn=worker_init_fn if seed is not None else None,
         **kwargs)
 

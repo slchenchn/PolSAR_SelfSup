@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-18
-Last Modified: 2021-09-24
+Last Modified: 2021-09-28
 	content: 
 '''
 
@@ -22,7 +22,11 @@ class PixPredHead(LatentPredictHead):
     ''' Head of pixels-level BYOL
     '''
 
-    def forward(self, input:Tensor, target:Tensor, mask:Tensor):
+    def forward(self,
+                input:Tensor,
+                target:Tensor,
+                mask_input:Tensor,
+                mask_target:Tensor):
         """
         Args:
             input (Tensor): NxHxWxC input features.
@@ -32,27 +36,34 @@ class PixPredHead(LatentPredictHead):
         Returns:
             dict[str, Tensor]: A dictionary of loss components.
         """
+
         pred = self.predictor([input])[0]
         pred_norm = F.normalize(pred, dim=1)
         target_norm = F.normalize(target, dim=1)
-        mask = resize(mask.unsqueeze(1).type(torch.float32),
-                    pred_norm.shape[2:])
-        mask = mask.squeeze().type(torch.int)
         pred_norm = pred_norm.permute(0, 2, 3, 1)
         target_norm = target_norm.permute(0, 2, 3, 1)
 
-        # n_segments = mask.max(dim=(1,2,3))
-        n_segments = mask.max().item()
-        # segment_norm = torch.empty_like(pred_norm)
-        segment_norm = torch.zeros_like(pred_norm)
+        mask_input = resize(mask_input.unsqueeze(1).type(torch.float32),
+                    pred_norm.shape[2:]).squeeze().type(torch.int)
+        mask_target = resize(mask_target.unsqueeze(1).type(torch.float32),
+                    pred_norm.shape[2:]).squeeze().type(torch.int)
+        
+
+        n_segments = min(mask_input.max(), mask_target.max()).item()
+        segment_norm = torch.empty_like(pred_norm)
+        # segment_norm = torch.zeros_like(pred_norm)
+        loss_mask = torch.zeros_like(mask_input)
         for ii in range(1, n_segments+1):
+            # project to feature map of input
             # NOTE: Advanced indexing always returns a copy of the data
-            pix_idx = (mask==ii)
-            segment_feat = target_norm[pix_idx]
-            segment_norm[mask==ii] = segment_feat.mean(dim=0)
+            target_idx = (mask_target==ii)
+            segment_feat = target_norm[target_idx]
+            input_idx = (mask_input==ii)
+            segment_norm[input_idx] = segment_feat.mean(dim=0)
+            loss_mask += input_idx
             
-        loss = -2 * (pred_norm * segment_norm).sum()
+        loss = -2 * (pred_norm * segment_norm)[loss_mask].sum()
         if self.size_average:
-            loss /= (mask>0).sum()
+            loss /= loss_mask.sum()
         return dict(loss=loss)
         
