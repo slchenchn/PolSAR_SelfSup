@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-18
-Last Modified: 2021-09-28
+Last Modified: 2021-09-29
 	content: 
 '''
 
@@ -10,6 +10,7 @@ from torch import Tensor
 import torch.nn as nn
 import torch.nn.functional as F
 from mmcv.cnn import normal_init
+import numpy as np
 
 from openselfsup.ops import resize
 from ..registry import HEADS
@@ -44,25 +45,34 @@ class PixPredHead(LatentPredictHead):
         target_norm = target_norm.permute(0, 2, 3, 1)
 
         mask_input = resize(mask_input.unsqueeze(1).type(torch.float32),
-                    pred_norm.shape[2:]).squeeze().type(torch.int)
+                    pred_norm.shape[1:3]).squeeze().type(torch.int)
         mask_target = resize(mask_target.unsqueeze(1).type(torch.float32),
-                    pred_norm.shape[2:]).squeeze().type(torch.int)
+                    pred_norm.shape[1:3]).squeeze().type(torch.int)
         
 
-        n_segments = min(mask_input.max(), mask_target.max()).item()
+        # n_segments = min(mask_input.max(), mask_target.max()).item()
+        segment_idx = np.intersect1d(mask_input.cpu().numpy(), mask_target.cpu().numpy())
         segment_norm = torch.empty_like(pred_norm)
         # segment_norm = torch.zeros_like(pred_norm)
         loss_mask = torch.zeros_like(mask_input)
-        for ii in range(1, n_segments+1):
+        for ii in segment_idx:
+            if ii==0:
+                continue
+
             # project to feature map of input
             # NOTE: Advanced indexing always returns a copy of the data
             target_idx = (mask_target==ii)
             segment_feat = target_norm[target_idx]
             input_idx = (mask_input==ii)
             segment_norm[input_idx] = segment_feat.mean(dim=0)
+            # if torch.any(torch.isnan(segment_feat)):
+            #     print('there are nan')
+            # if torch.any(torch.isnan(segment_feat.mean(dim=0))):
+            #     print(f'there are nan')
             loss_mask += input_idx
             
-        loss = -2 * (pred_norm * segment_norm)[loss_mask].sum()
+        loss = -2 * (pred_norm * segment_norm)[loss_mask.bool()].sum()
+        
         if self.size_average:
             loss /= loss_mask.sum()
         return dict(loss=loss)

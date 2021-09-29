@@ -1,3 +1,10 @@
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-14
+Last Modified: 2021-09-28
+	content: 
+'''
+
 train_cfg = {}
 test_cfg = {}
 optimizer_config = dict()  # grad_clip, coalesce, bucket_size_mb
@@ -16,4 +23,4 @@ log_level = 'INFO'
 load_from = None
 resume_from = None
 workflow = [('train', 1)]
-prefetch = False
+# prefetch = False

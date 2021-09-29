@@ -6,7 +6,7 @@ Last Modified: 2021-09-28
 '''
 
 _base_ = ['../_base_/default_runtime.py', 
-        '../_base_/datasets/sn6_sar_pro.py'
+        '../_base_/datasets/sn6_sar_pro_ul.py'
         ]
 
 # model settings, output stride=8 for deeplabv3

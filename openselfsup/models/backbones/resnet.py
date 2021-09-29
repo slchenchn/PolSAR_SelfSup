@@ -1,10 +1,11 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-27
+Last Modified: 2021-09-29
 	content: 
 '''
 import torch.nn as nn
+import torch
 import torch.utils.checkpoint as cp
 from mmcv.cnn import constant_init, kaiming_init
 from mmcv.runner import load_checkpoint
@@ -454,6 +455,7 @@ class ResNet(nn.Module):
             raise TypeError('pretrained must be a str or None')
 
     def forward(self, x):
+        tmp = torch.clone(x)
         if self.deep_stem:
             x = self.stem(x)
         else:
@@ -461,6 +463,9 @@ class ResNet(nn.Module):
             x = self.norm1(x)
             x = self.relu(x)    # r50: 64x128x128
         
+        # if torch.any(torch.isnan(x)):
+        #     print()
+
         outs = []
         if 0 in self.out_indices:
             outs.append(x)
@@ -468,6 +473,8 @@ class ResNet(nn.Module):
         for i, layer_name in enumerate(self.res_layers):
             res_layer = getattr(self, layer_name)
             x = res_layer(x)
+            # if torch.any(torch.isnan(x)):
+            #     print()
             if i + 1 in self.out_indices:
                 outs.append(x)
         # r50: 1-256x56x56; 2-512x28x28; 3-1024x14x14; 4-2048x7x7

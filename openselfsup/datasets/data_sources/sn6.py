@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-09-25
+Last Modified: 2021-09-28
 	content: 
 '''
 
@@ -79,7 +79,8 @@ class SpaceNet6(ImageList):
         img = img.convert('RGB')
         
         if self.return_label:
-            label_path = osp.join(self.ann_dir, self.fns[idx]+self.ann_suffix)
+            label_path = osp.join(self.ann_dir,
+                                osp.split(self.fns[idx])[1]+self.ann_suffix)
             label = Image.open(label_path)
             return img, label
         else:
