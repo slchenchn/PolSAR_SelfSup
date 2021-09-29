@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-27
+Last Modified: 2021-09-29
 	content: 
 '''
 import random
@@ -186,7 +186,7 @@ def _dist_train(model, dataset, cfg, logger=None, timestamp=None, meta=None):
             shuffle=True,
             replace=getattr(cfg.data, 'sampling_replace', False),
             seed=cfg.seed,
-            drop_last=getattr(cfg.data, 'drop_last', False),
+            drop_last=getattr(cfg.data, 'drop_last', True),
             prefetch=cfg.prefetch,
             img_norm_cfg=cfg.img_norm_cfg) for ds in dataset
     ]
@@ -254,7 +254,7 @@ def _non_dist_train(model,
             shuffle=True,
             replace=getattr(cfg.data, 'sampling_replace', False),
             seed=cfg.seed,
-            drop_last=getattr(cfg.data, 'drop_last', False),
+            drop_last=getattr(cfg.data, 'drop_last', True),
             prefetch=cfg.prefetch,
             img_norm_cfg=cfg.img_norm_cfg) for ds in dataset
     ]

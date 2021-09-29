@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-28
-Last Modified: 2021-09-28
+Last Modified: 2021-09-29
 	content: labeled and unlabeled data of SAR intensity images
 '''
 
@@ -74,7 +74,7 @@ train_pipeline2[3]['p'] = 0.1 # box blur TODO: add gaussian blur
 # train_pipeline2[5]['p'] = 0.2 # solarization
     
 data = dict(
-    imgs_per_gpu=32,    # total 32*8
+    imgs_per_gpu=32,    # total 32
     workers_per_gpu=12,
     train=dict(
         # if_visualize=True, 

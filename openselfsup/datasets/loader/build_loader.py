@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-27
+Last Modified: 2021-09-29
 	content: 
 '''
 import platform
@@ -34,6 +34,7 @@ def build_dataloader(dataset,
                      replace=False,
                      seed=None,
                      pin_memory=True,
+                     drop_last=True,
                      **kwargs):
     """Build PyTorch DataLoader.
 
@@ -85,6 +86,7 @@ def build_dataloader(dataset,
         collate_fn=partial(collate, samples_per_gpu=imgs_per_gpu),
         pin_memory=pin_memory,
         worker_init_fn=worker_init_fn if seed is not None else None,
+        drop_last=drop_last,
         **kwargs)
 
     if prefetch:
