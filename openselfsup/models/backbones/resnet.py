@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-29
+Last Modified: 2021-09-30
 	content: 
 '''
 import torch.nn as nn
@@ -13,7 +13,7 @@ from torch.nn.modules.batchnorm import _BatchNorm
 
 from openselfsup.utils import get_root_logger
 from ..registry import BACKBONES
-from ..utils import build_conv_layer, build_norm_layer
+from mmcv.cnn import build_conv_layer, build_norm_layer
 
 
 class BasicBlock(nn.Module):

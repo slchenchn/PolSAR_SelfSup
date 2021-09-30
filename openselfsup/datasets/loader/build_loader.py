@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-29
+Last Modified: 2021-09-30
 	content: 
 '''
 import platform
@@ -68,7 +68,7 @@ def build_dataloader(dataset,
         if replace:
             raise NotImplemented
         sampler = RandomSampler(
-            dataset) if shuffle else None  # TODO: set replace
+            dataset) if shuffle else None
         batch_size = num_gpus * imgs_per_gpu
         num_workers = num_gpus * workers_per_gpu
 

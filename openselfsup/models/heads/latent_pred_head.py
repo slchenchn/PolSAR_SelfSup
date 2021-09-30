@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-18
+Last Modified: 2021-09-30
 	content: 
 '''
 
@@ -20,7 +20,6 @@ class LatentPredictHead(nn.Module):
 
     def __init__(self, predictor, size_average=True):
         super().__init__()
-        # QUERY: why build neck, not build head?
         self.predictor = builder.build_neck(predictor)
         self.size_average = size_average
 

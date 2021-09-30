@@ -1,9 +1,15 @@
-import math
+'''
+Author: Shuailin Chen
+Created Date: 2021-09-18
+Last Modified: 2021-09-30
+	content: 
+'''
 
+import math
 import torch.nn as nn
 
 from ..registry import BACKBONES
-from ..utils import build_conv_layer, build_norm_layer
+from mmcv.cnn import build_conv_layer, build_norm_layer
 from .resnet import Bottleneck as _Bottleneck
 from .resnet import ResNet
 
