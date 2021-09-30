@@ -34,11 +34,12 @@ custom_hooks = [
 ]
 
 # optimizer
-optimizer = dict(type='LARS', lr=0.3, weight_decay=0.000001, 
-                momentum=0.9,
-                paramwise_options={
-                    '(bn|gn)(\d+)?.(weight|bias)': dict(weight_decay=0., lars_exclude=True),
-                    'bias': dict(weight_decay=0., lars_exclude=True)})
+# optimizer = dict(type='LARS', lr=0.3, weight_decay=0.000001, 
+#                 momentum=0.9,
+#                 paramwise_options={
+#                     '(bn|gn)(\d+)?.(weight|bias)': dict(weight_decay=0., lars_exclude=True),
+#                     'bias': dict(weight_decay=0., lars_exclude=True)})
+optimizer = dict(type='SGD', lr=0.3, weight_decay=0.0001, momentum=0.9)
                     
 # learning policy
 lr_config = dict(

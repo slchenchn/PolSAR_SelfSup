@@ -6,36 +6,26 @@ Last Modified: 2021-09-30
 '''
 
 _base_ = ['../_base_/default_runtime.py', 
+        '../_base_/models/r18-d8.py', 
         '../_base_/datasets/sn6_sar_pro_ul.py'
         ]
 
 # model settings, output stride=8 for deeplabv3
 model = dict(
     type='PixBYOL',
-    pretrained=None,
     base_momentum=0.996,
-    backbone=dict(
-        type='ResNetV1c',
-        depth=50,
-        in_channels=3,
-        out_indices=[4],  # x: stage-x + 1
-        norm_cfg=dict(type='BN'),
-        # set output stride=8
-        dilations=(1, 1, 2, 4),
-        strides=(1, 2, 1, 1),
-        ),
     neck=dict(
         type='NonLinear1x1ConvNeck',
         # olive-shaped projector
-        in_channels=2048,
-        hid_channels=4096,
-        out_channels=256,
+        in_channels=512,
+        hid_channels=1024,
+        out_channels=64,
         ),
     head=dict(type='PixPredHead',
               size_average=True,
               predictor=dict(type='NonLinear1x1ConvNeck',
-                             in_channels=256, hid_channels=4096,
-                             out_channels=256))
+                             in_channels=64, hid_channels=1024,
+                             out_channels=64))
 )
     
 # additional hooks
@@ -44,12 +34,12 @@ custom_hooks = [
 ]
 
 # optimizer
-optimizer = dict(type='LARS', lr=0.3, weight_decay=0.000001, 
-                momentum=0.9,
-                paramwise_options={
-                    '(bn|gn)(\d+)?.(weight|bias)': dict(weight_decay=0., lars_exclude=True),
-                    'bias': dict(weight_decay=0., lars_exclude=True)})
-
+# optimizer = dict(type='LARS', lr=0.3, weight_decay=0.000001, 
+#                 momentum=0.9,
+#                 paramwise_options={
+#                     '(bn|gn)(\d+)?.(weight|bias)': dict(weight_decay=0., lars_exclude=True),
+#                     'bias': dict(weight_decay=0., lars_exclude=True)})
+optimizer = dict(type='SGD', lr=0.0375, weight_decay=0.0001, momentum=0.9)
                     
 # learning policy
 lr_config = dict(
