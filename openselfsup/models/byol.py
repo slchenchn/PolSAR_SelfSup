@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-27
+Last Modified: 2021-09-29
 	content: 
 '''
 import torch
@@ -114,7 +114,7 @@ class BYOL(nn.Module):
 
         loss = self.head(proj_online_v1, proj_target_v2)['loss'] + \
                self.head(proj_online_v2, proj_target_v1)['loss']
-        return dict(loss=loss, byol_momentum=self.momentum)
+        return dict(loss=loss)
 
     def forward_test(self, img, **kwargs):
         pass

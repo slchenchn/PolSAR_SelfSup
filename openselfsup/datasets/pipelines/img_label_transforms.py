@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-09-23
+Last Modified: 2021-09-29
 	content: 
 '''
 
@@ -182,6 +182,7 @@ class IMRandomResizedCrop(_transforms.RandomResizedCrop):
 
         img_mask = merge_img_mask(new_img, new_mask)
         return img_mask
+
 
 @PIPELINES.register_module()
 class IMToTensor(_transforms.ToTensor):
