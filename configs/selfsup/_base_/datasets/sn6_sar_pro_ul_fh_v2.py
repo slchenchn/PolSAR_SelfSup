@@ -31,7 +31,7 @@ train_pipeline = [
     dict(type='RandomHorizontalFlip'),
     # dict(type='ViewImgLabels'),
     dict(
-        type='RandomAppliedTrans',
+        type='RandomAppliedTransOnlyImg',
         transforms=[
             dict(
                 type='ColorJitter',
