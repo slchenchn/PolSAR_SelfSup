@@ -49,6 +49,6 @@ lr_config = dict(
     warmup_iters=2,
     warmup_ratio=0.0001,    # start lr = base_lr * warmup_ratio
     warmup_by_epoch=True)
-checkpoint_config = dict(interval=10)
+checkpoint_config = dict(interval=20)
 # runtime settings
 total_epochs = 200

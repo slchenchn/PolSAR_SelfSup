@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-28
+Last Modified: 2021-10-09
 	content: 
 '''
 
@@ -58,6 +58,6 @@ lr_config = dict(
     warmup_iters=2,
     warmup_ratio=0.0001,    # start lr = base_lr * warmup_ratio
     warmup_by_epoch=True)
-checkpoint_config = dict(interval=10)
+checkpoint_config = dict(interval=20)
 # runtime settings
 total_epochs = 200
