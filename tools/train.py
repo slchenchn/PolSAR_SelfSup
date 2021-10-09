@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-09
-Last Modified: 2021-09-27
+Last Modified: 2021-10-09
 	content: 
 '''
 from __future__ import division
@@ -22,6 +22,7 @@ from openselfsup.apis import set_random_seed, train_model
 from openselfsup.datasets import build_dataset
 from openselfsup.models import build_model
 from openselfsup.utils import collect_env, get_root_logger, traverse_replace
+from benchmarks.semseg.openselfsup2mmseg import convert_whole_folder
 
 
 def parse_args():
@@ -165,6 +166,7 @@ def main():
         distributed=distributed,
         timestamp=timestamp,
         meta=meta)
+    convert_whole_folder(cfg.work_dir, prefix='mmseg_')
 
 
 if __name__ == '__main__':
