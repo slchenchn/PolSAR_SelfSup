@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-23
-Last Modified: 2021-09-30
+Last Modified: 2021-10-10
 	content: 
 '''
 
@@ -23,13 +23,15 @@ class NonLinear1x1ConvNeck(nn.Module):
                  in_channels,
                  hid_channels,
                  out_channels,
+                 dropout_ratio=0.0,
                  ):
         super().__init__()
         self.mlp = nn.Sequential(
+            nn.Dropout2d(dropout_ratio),
             nn.Conv2d(in_channels, hid_channels, 1),
-            # nn.Dropout2d
             nn.BatchNorm2d(hid_channels),
             nn.ReLU(inplace=True),
+            nn.Dropout2d(dropout_ratio),
             nn.Conv2d(hid_channels, out_channels, 1)
         )
     
