@@ -185,12 +185,11 @@ class IMRandomResizedCrop(_transforms.RandomResizedCrop):
             i, j, h, w = self.get_params(img, self.scale, self.ratio)
             new_mask = _transF.resized_crop(mask, i, j, h, w, self.size,
                             interpolation=_transF.InterpolationMode.NEAREST)
-            if 
-            new_img = _transF.resized_crop(img, i, j, h, w, self.size,
+            if (new_mask>0).sum() > self.min_valid_ratio * h * w:
+                new_img = _transF.resized_crop(img, i, j, h, w, self.size,
                                             interpolation=self.interpolation)
-
-        img_mask = merge_img_mask(new_img, new_mask)
-        return img_mask
+                img_mask = merge_img_mask(new_img, new_mask)
+                return img_mask
 
 
 @PIPELINES.register_module()
