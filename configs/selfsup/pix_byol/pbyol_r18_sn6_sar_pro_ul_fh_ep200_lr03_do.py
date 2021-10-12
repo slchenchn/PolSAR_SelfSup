@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-10-10
+Last Modified: 2021-10-11
 	content: with dropout
 '''
 
@@ -20,7 +20,7 @@ model = dict(
         in_channels=512,
         hid_channels=1024,
         out_channels=64,
-        dropout_ratio=0.1,
+        dropout_ratio=0.3,
         ),
     head=dict(type='PixPredHead',
               size_average=True,
