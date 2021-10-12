@@ -39,15 +39,13 @@ model = dict(
 
 data=dict(
     # _delete_=True,
-    imgs_per_gpu=64,  # total 32*8=256
+    imgs_per_gpu=256,  # total 32*8=256
+    min_intersect=0.5,
     # workers_per_gpu=12,
-    train=dict(
-        min_intersect=0.5,
-    )
 )
 
 # additional hooks
 custom_hooks = [
-    dict(type='BYOLHook', end_momentum=1., update_interval=4)
+    dict(type='BYOLHook', end_momentum=1., update_interval=1)
 ]
 
