@@ -237,13 +237,18 @@ class NonLinearNeckV2(nn.Module):
         if mask is not None:
             mask = mask > 0
             mask = resize(mask.unsqueeze(1).float(), x.shape[2:]).int()
-            x = x * mask
+            x = x * mask.detach()
             # rescale to compensate global average pooling
             rescale = torch.prod(torch.tensor(x.shape[2:])) / mask.sum(dim=(1,2, 3), keepdim=True)
             x *= rescale
         if self.with_avg_pool:
             x = self.avgpool(x)
-        return [self.mlp(x.view(x.size(0), -1))]
+        if torch.any(torch.isnan(x)):
+            print('nan neck x')
+        out =  self.mlp(x.view(x.size(0), -1))
+        if torch.any(torch.isnan(out)):
+            print('nan neck out')
+        return [out]
 
 
 @NECKS.register_module()

@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-09-29
+Last Modified: 2021-10-12
 	content: 
 '''
 
@@ -167,18 +167,27 @@ class IMNormalize(_transforms.Normalize):
 class IMRandomResizedCrop(_transforms.RandomResizedCrop):
     '''Crop a random portion of image and mask, and resize it to a given size.
 
+    Args:
+        min_valid_ratio (float): minimum acceptable ratio of valid region.
+            It will iterata until ratio of valid region greater than this.
     NOTE: interpolation methods of image is bilinear, of mask is nearest
     '''
+
+    def __init__(self, *args, min_valid_ratio=0.5, **kargs):
+        super().__init__(*args, **kargs)
+        self.min_valid_ratio = min_valid_ratio
 
     def forward(self, img_mask):
         assert isinstance(img_mask, Image.Image)
         img, mask = split_img_mask(img_mask)
         
-        i, j, h, w = self.get_params(img, self.scale, self.ratio)
-        new_img = _transF.resized_crop(img, i, j, h, w, self.size,
-                                        interpolation=self.interpolation)
-        new_mask = _transF.resized_crop(mask, i, j, h, w, self.size,
+        while True:
+            i, j, h, w = self.get_params(img, self.scale, self.ratio)
+            new_mask = _transF.resized_crop(mask, i, j, h, w, self.size,
                             interpolation=_transF.InterpolationMode.NEAREST)
+            if 
+            new_img = _transF.resized_crop(img, i, j, h, w, self.size,
+                                            interpolation=self.interpolation)
 
         img_mask = merge_img_mask(new_img, new_mask)
         return img_mask
