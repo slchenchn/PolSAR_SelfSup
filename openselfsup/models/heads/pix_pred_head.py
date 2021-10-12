@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-18
-Last Modified: 2021-09-29
+Last Modified: 2021-10-12
 	content: 
 '''
 
@@ -44,10 +44,10 @@ class PixPredHead(LatentPredictHead):
         pred_norm = pred_norm.permute(0, 2, 3, 1)
         target_norm = target_norm.permute(0, 2, 3, 1)
 
-        mask_input = resize(mask_input.unsqueeze(1).type(torch.float32),
-                    pred_norm.shape[1:3]).squeeze().type(torch.int)
-        mask_target = resize(mask_target.unsqueeze(1).type(torch.float32),
-                    pred_norm.shape[1:3]).squeeze().type(torch.int)
+        mask_input = resize(mask_input.unsqueeze(1).float(),
+                    pred_norm.shape[1:3]).squeeze().int()
+        mask_target = resize(mask_target.unsqueeze(1).float(),
+                    pred_norm.shape[1:3]).squeeze().int()
         
 
         # n_segments = min(mask_input.max(), mask_target.max()).item()

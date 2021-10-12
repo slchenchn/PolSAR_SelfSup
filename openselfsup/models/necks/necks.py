@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-09-23
+Last Modified: 2021-10-12
 	content: 
 '''
 
@@ -10,6 +10,7 @@ import torch.nn as nn
 from packaging import version
 from mmcv.cnn import kaiming_init, normal_init
 
+from openselfsup.ops import resize
 from ..registry import NECKS
 from ..utils import build_norm_layer
 
@@ -229,10 +230,17 @@ class NonLinearNeckV2(nn.Module):
     def init_weights(self, init_linear='normal'):
         _init_weights(self, init_linear)
 
-    def forward(self, x):
+    def forward(self, x, mask=None):
         assert len(x) == 1, \
                 f"expect len of inputs feautes to be 1, Got: {len(x)}"
         x = x[0]
+        if mask is not None:
+            mask = mask > 0
+            mask = resize(mask.unsqueeze(1).float(), x.shape[2:]).int()
+            x = x * mask
+            # rescale to compensate global average pooling
+            rescale = torch.prod(torch.tensor(x.shape[2:])) / mask.sum(dim=(1,2, 3), keepdim=True)
+            x *= rescale
         if self.with_avg_pool:
             x = self.avgpool(x)
         return [self.mlp(x.view(x.size(0), -1))]

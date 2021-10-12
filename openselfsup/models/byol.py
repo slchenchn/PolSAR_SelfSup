@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-29
+Last Modified: 2021-10-12
 	content: 
 '''
 import torch
@@ -43,6 +43,9 @@ class BYOL(nn.Module):
         self.target_net = nn.Sequential(
             builder.build_backbone(backbone), builder.build_neck(neck))
         self.backbone = self.online_net[0]
+        self.neck = self.online_net[1]
+        self.backbone_tgt = self.target_net[0]
+        self.neck_tgt = self.target_net[1]
         for param in self.target_net.parameters():
             param.requires_grad = False
         self.head = builder.build_head(head)
@@ -85,7 +88,7 @@ class BYOL(nn.Module):
     def momentum_update(self):
         self._momentum_update()
 
-    def forward_train(self, img, mask, **kwargs):
+    def forward_train(self, img, mask=None, **kwargs):
         """
         Args:
             img (Tensor): Input of two concatenated images of shape (N, 2, C,
@@ -97,23 +100,32 @@ class BYOL(nn.Module):
         """
 
         assert img.dim() == 5, f"images must have 5 dims, got: {img.dim()}"
-        assert mask.dim() == 4, f"masks must have 4 dims, got: {mask.dim()}"
+        assert mask is None or mask.dim() == 4, \
+            f"masks must have 4 dims, got: {mask.dim()}"
 
         img_v1 = img[:, 0, ...].contiguous()
         img_v2 = img[:, 1, ...].contiguous()
-        mask_v1 = mask[:, 0, ...].contiguous()
-        mask_v2 = mask[:, 1, ...].contiguous()
+
+        if mask is None:
+            mask_v1 = None
+            mask_v2 = None
+        else:
+            mask_v1 = mask[:, 0, ...].contiguous()
+            mask_v2 = mask[:, 1, ...].contiguous()
 
         # compute query features
-        proj_online_v1 = self.online_net(img_v1)[0]
-        proj_online_v2 = self.online_net(img_v2)[0]
+        proj_online_v1 = self.backbone(img_v1)
+        proj_online_v1 = self.neck(proj_online_v1, mask_v1)[0]
+        proj_online_v2 = self.backbone_tgt(img_v2)
+        proj_online_v2 = self.neck(proj_online_v2, mask_v2)[0]
+
         with torch.no_grad():
             # QUERY: why need to clone
             proj_target_v1 = self.target_net(img_v1)[0].clone().detach()
             proj_target_v2 = self.target_net(img_v2)[0].clone().detach()
 
-        loss = self.head(proj_online_v1, proj_target_v2)['loss'] + \
-               self.head(proj_online_v2, proj_target_v1)['loss']
+        loss = self.head(proj_online_v1, proj_target_v2)['loss'] \
+            + self.head(proj_online_v2, proj_target_v1)['loss']
         return dict(loss=loss)
 
     def forward_test(self, img, **kwargs):
