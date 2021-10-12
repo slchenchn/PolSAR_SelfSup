@@ -243,11 +243,7 @@ class NonLinearNeckV2(nn.Module):
             x *= rescale
         if self.with_avg_pool:
             x = self.avgpool(x)
-        if torch.any(torch.isnan(x)):
-            print('nan neck x')
         out =  self.mlp(x.view(x.size(0), -1))
-        if torch.any(torch.isnan(out)):
-            print('nan neck out')
         return [out]
 
 
