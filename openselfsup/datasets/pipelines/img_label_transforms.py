@@ -173,7 +173,7 @@ class IMRandomResizedCrop(_transforms.RandomResizedCrop):
     NOTE: interpolation methods of image is bilinear, of mask is nearest
     '''
 
-    def __init__(self, *args, min_valid_ratio=0.5, **kargs):
+    def __init__(self, *args, min_valid_ratio=0.25, **kargs):
         super().__init__(*args, **kargs)
         self.min_valid_ratio = min_valid_ratio
 
@@ -185,7 +185,7 @@ class IMRandomResizedCrop(_transforms.RandomResizedCrop):
             i, j, h, w = self.get_params(img, self.scale, self.ratio)
             new_mask = _transF.resized_crop(mask, i, j, h, w, self.size,
                             interpolation=_transF.InterpolationMode.NEAREST)
-            if (new_mask>0).sum() > self.min_valid_ratio * h * w:
+            if (np.asarray(new_mask)>0).sum() > self.min_valid_ratio * np.prod(self.size):
                 new_img = _transF.resized_crop(img, i, j, h, w, self.size,
                                             interpolation=self.interpolation)
                 img_mask = merge_img_mask(new_img, new_mask)
