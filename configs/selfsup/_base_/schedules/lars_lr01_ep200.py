@@ -1,12 +1,12 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-10-12
-Last Modified: 2021-10-14
+Last Modified: 2021-10-15
 	content: 
 '''
 
 # optimizer
-optimizer = dict(type='LARS', lr=0.2, weight_decay=0.0000015,
+optimizer = dict(type='LARS', lr=0.1, weight_decay=0.0000015,
 				momentum=0.9,
 				paramwise_options={
 				'(bn|gn)(\d+)?.(weight|bias)': dict(weight_decay=0., lars_exclude=True),

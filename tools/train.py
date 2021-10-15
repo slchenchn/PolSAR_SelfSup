@@ -1,15 +1,18 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-09
-Last Modified: 2021-10-09
+Last Modified: 2021-10-14
 	content: 
 '''
+
 from __future__ import division
 import argparse
 import importlib
 import os
 import os.path as osp
+from os import system
 import time
+
 
 import mmcv
 import torch
@@ -166,8 +169,11 @@ def main():
         distributed=distributed,
         timestamp=timestamp,
         meta=meta)
-    convert_whole_folder(cfg.work_dir, prefix='mmseg_')
 
+    convert_whole_folder(cfg.work_dir, prefix='mmseg_')
+    # fine tuning command
+    # ft_cmd = rf'python ~/code/spacenet6/tools/train.py configs/deeplabv3/deeplabv3_r18-d8-selfsup_512x512_20k_sn6_sar_pro_ft.py --options model.pretrained={osp.abspath(osp.join(cfg.work_dir, "mmseg_epoch_200.pth"))}'
+    # system(ft_cmd)
 
 if __name__ == '__main__':
     main()

@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-10-12
+Last Modified: 2021-10-14
 	content: 
 '''
 
@@ -46,6 +46,6 @@ data=dict(
 
 # additional hooks
 custom_hooks = [
-    dict(type='BYOLHook', end_momentum=1., update_interval=4)
+    dict(type='BYOLHook', end_momentum=1., update_interval=2)
 ]
 
