@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-10-12
-Last Modified: 2021-10-14
+Last Modified: 2021-10-19
 	content: 
 '''
 
@@ -14,7 +14,7 @@ optimizer = dict(type='LARS', lr=0.2, weight_decay=0.0000015,
 				)
 				}
 )
-                    
+
 # learning policy
 lr_config = dict(
     policy='CosineAnnealing',

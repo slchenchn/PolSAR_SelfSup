@@ -1,8 +1,9 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-10-11
-	content: with dropout
+Last Modified: 2021-10-15
+	content: with dropout 
+    NOTE: this version of dropout is only on projector, not predictor
 '''
 
 _base_ = ['../_base_/default_runtime.py', 
@@ -20,7 +21,7 @@ model = dict(
         in_channels=512,
         hid_channels=1024,
         out_channels=64,
-        dropout_ratio=0.3,
+        dropout_ratio=0.2,
         ),
     head=dict(type='PixPredHead',
               size_average=True,
