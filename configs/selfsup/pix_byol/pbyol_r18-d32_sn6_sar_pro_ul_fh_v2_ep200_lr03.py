@@ -1,14 +1,13 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-10-15
-	content: with dropout 
-    NOTE: this version of dropout is only on projector, not predictor
+Last Modified: 2021-10-13
+	content: compared with v1, add color jitter
 '''
 
 _base_ = ['../_base_/default_runtime.py', 
-        '../_base_/models/r18-d8.py', 
-        '../_base_/datasets/sn6_sar_pro_ul_fh.py'
+        '../_base_/models/r18-d32.py', 
+        '../_base_/datasets/sn6_sar_pro_ul_fh_v2.py'
         ]
 
 # model settings, output stride=8 for deeplabv3
@@ -21,7 +20,6 @@ model = dict(
         in_channels=512,
         hid_channels=1024,
         out_channels=64,
-        dropout_ratio=0.2,
         ),
     head=dict(type='PixPredHead',
               size_average=True,
