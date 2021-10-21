@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-10-12
+Last Modified: 2021-10-21
 	content: 
 '''
 
@@ -16,6 +16,8 @@ from torch import Tensor
 from torchvision import transforms as _transforms
 import torchvision.transforms.functional as _transF
 import mylib.labelme_utils as lu
+from typing import Tuple, List, Optional
+import math
 
 from openselfsup.utils import build_from_cfg
 from ..registry import PIPELINES
@@ -177,12 +179,67 @@ class IMRandomResizedCrop(_transforms.RandomResizedCrop):
         super().__init__(*args, **kargs)
         self.min_valid_ratio = min_valid_ratio
 
+    @staticmethod
+    def get_params(mask: Tensor, scale: List[float], ratio: List[float]) -> Tuple[int, int, int, int]:
+        """Get parameters for ``crop`` for a random sized crop.
+
+        Args:
+            mask (PIL Image or Tensor): Input mask image
+            scale (list): range of scale of the origin size cropped
+            ratio (list): range of aspect ratio of the origin aspect ratio cropped
+
+        Returns:
+            tuple: params (i, j, h, w) to be passed to ``crop`` for a random
+            sized crop.
+        """
+        width, height = _transF._get_image_size(mask)
+        area = height * width
+
+        bi_mask = torch.from_numpy(np.asarray(mask)) > 0
+        row, col = torch.nonzero(bi_mask, as_tuple=True)
+        h_min = row[0]
+        h_max = row[-1]
+        w_min = col[0]
+        w_max = col[-1]
+
+        log_ratio = torch.log(torch.tensor(ratio))
+        for _ in range(10):
+            target_area = area * torch.empty(1).uniform_(scale[0], scale[1]).item()
+            aspect_ratio = torch.exp(
+                torch.empty(1).uniform_(log_ratio[0], log_ratio[1])
+            ).item()
+
+            w = int(round(math.sqrt(target_area * aspect_ratio)))
+            h = int(round(math.sqrt(target_area / aspect_ratio)))
+
+            if 0 < w <= width and 0 < h <= height:
+                # i = torch.randint(0, height - h + 1, size=(1,)).item()
+                # j = torch.randint(0, width - w + 1, size=(1,)).item()
+                i = torch.randint(h_min, h_max - h + 1, size=(1,)).item()
+                j = torch.randint(w_min, w_max - w + 1, size=(1,)).item()
+                return i, j, h, w
+
+        # Fallback to central crop
+        in_ratio = float(width) / float(height)
+        if in_ratio < min(ratio):
+            w = width
+            h = int(round(w / min(ratio)))
+        elif in_ratio > max(ratio):
+            h = height
+            w = int(round(h * max(ratio)))
+        else:  # whole image
+            w = width
+            h = height
+        i = (height - h) // 2
+        j = (width - w) // 2
+        return i, j, h, w
+
     def forward(self, img_mask):
         assert isinstance(img_mask, Image.Image)
         img, mask = split_img_mask(img_mask)
         
-        while True:
-            i, j, h, w = self.get_params(img, self.scale, self.ratio)
+        for _ in range(10):
+            i, j, h, w = self.get_params(mask, self.scale, self.ratio)
             new_mask = _transF.resized_crop(mask, i, j, h, w, self.size,
                             interpolation=_transF.InterpolationMode.NEAREST)
             if (np.asarray(new_mask)>0).sum() > self.min_valid_ratio * np.prod(self.size):

@@ -21,14 +21,14 @@ data_source_cfg = dict(
     return_label=True,
 )
 data_train_list = ['data/SN6_sup/split/labeled_and_unlabeled_rotated.txt', 
-                    'data/SN6_sup/split/extend_train.txt',
+                    'data/SN6_sup/split/extend_train_GT02.txt',
                     ]
                     
 dataset_type = 'PixBYOLDataset'
 img_norm_cfg = dict(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 train_pipeline = [
     # dict(type='ViewImgLabels'),
-    dict(type='IMRandomResizedCrop', size=224, min_valid_ratio=0.5),
+    dict(type='IMRandomResizedCrop', size=224, min_valid_ratio=0.05),
     # dict(type='ViewImgLabels'),
     dict(type='RandomHorizontalFlip'),
     # dict(type='ViewImgLabels'),

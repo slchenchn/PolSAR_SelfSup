@@ -31,9 +31,9 @@ model = dict(
     
 # additional hooks
 custom_hooks = [
-    dict(type='BYOLHook', end_momentum=1., add_to_tb=True, update_interval=4)
+    dict(type='BYOLHook', end_momentum=1., add_to_tb=True, update_interval=2)
 ]
 
 data = dict(
-    imgs_per_gpu=64,
+    imgs_per_gpu=128,
 )
