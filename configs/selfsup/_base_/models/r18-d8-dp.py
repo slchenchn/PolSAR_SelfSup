@@ -10,6 +10,6 @@ _base_=['./r18-d8.py']
 model = dict(
     backbone=dict(
         type='ResNetDropPathV1c',
-        drop_path_ratio=0.3
+        drop_path_rate=0.3
         ),
 )
