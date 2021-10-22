@@ -98,11 +98,12 @@ class ResLayerDropPath(Sequential):
 
 class BasicBlockDropPath(BasicBlock):
 	''' Basic block with drop path (stochastic depth) '''
-	def __init__(self, *args, drop_path_rate=0.1, **kargs):
-		super().__init__(*args, **kargs)
+	def __init__(self, *args, drop_path_rate=0.1, with_cp=False, **kargs):
+		super().__init__(*args, with_cp=with_cp, **kargs)
 		self.drop_path_rate=0.1
 		self.drop = build_dropout(dict(type='DropPath',
 										drop_prob=drop_path_rate))
+		self.with_cp = with_cp
 
 	def forward(self, x):
 		
