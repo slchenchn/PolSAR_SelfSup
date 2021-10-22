@@ -58,7 +58,7 @@ def merge_img_mask(img, mask):
     ''' Merge image and mask, where image has 3 channels, mask has one channels
 
     Returns:
-        PIL Image object or Tensor
+        PIL Image object or Tensor or ndarray
     '''
     if isinstance(img, Image.Image):
         img = np.asarray(img)
@@ -79,6 +79,14 @@ def merge_img_mask(img, mask):
         assert mask.shape[0]==1 and img.shape[0]==3, f'img and mask should has #channels=3 and 1 got mask.#channels={mask.shape[0]}, img.#channels={img.shape[0]} '
 
         img_mask = torch.cat((img, mask), dim=0)
+    elif isinstance(img, ndarray):
+        if mask.ndim==2:
+            mask = mask[..., None]
+
+        assert mask.ndim==img.ndim==3, f'img and mask should has ndim=3, got img.ndim={img.ndim}, mask.ndim={mask.ndim}'
+        assert mask.shape[2]==1 and img.shape[2]==3, f'img and mask should has #channels=3 and 1 got mask.#channels={mask.shape[0]}, img.#channels={img.shape[0]} '
+
+        img_mask = np.concatenate((img, mask), axis=-1)
     else:
         raise NotImplementedError
         
@@ -167,12 +175,13 @@ class IMNormalize(_transforms.Normalize):
 
 @PIPELINES.register_module()
 class IMRandomResizedCrop(_transforms.RandomResizedCrop):
-    '''Crop a random portion of image and mask, and resize it to a given size.
+    '''Crop a random portion of image and mask, and resize it to a given size. 
 
     Args:
         min_valid_ratio (float): minimum acceptable ratio of valid region.
             It will iterata until ratio of valid region greater than this.
-    NOTE: interpolation methods of image is bilinear, of mask is nearest
+    NOTE: interpolation methods of image is bilinear, of mask is nearest.
+    It actually the v1 version: torchvision version
     '''
 
     def __init__(self, *args, min_valid_ratio=0.25, **kargs):
@@ -197,10 +206,10 @@ class IMRandomResizedCrop(_transforms.RandomResizedCrop):
 
         bi_mask = torch.from_numpy(np.asarray(mask)) > 0
         row, col = torch.nonzero(bi_mask, as_tuple=True)
-        h_min = row[0]
-        h_max = row[-1]
-        w_min = col[0]
-        w_max = col[-1]
+        h_min = row[0].item()
+        h_max = row[-1].item()
+        w_min = col[0].item()
+        w_max = col[-1].item()
 
         log_ratio = torch.log(torch.tensor(ratio))
         for _ in range(10):
@@ -247,6 +256,75 @@ class IMRandomResizedCrop(_transforms.RandomResizedCrop):
                                             interpolation=self.interpolation)
                 img_mask = merge_img_mask(new_img, new_mask)
                 return img_mask
+
+
+@PIPELINES.register_module()
+class IMRandomCrop(object):
+    """Random crop the image & mask. MMSeg implement version
+
+    Args:
+        crop_size (tuple): Expected size after cropping, (h, w).
+        cat_max_ratio (float): The maximum ratio that single category could
+            occupy.
+    """
+
+    def __init__(self, crop_size):
+        assert crop_size[0] > 0 and crop_size[1] > 0
+        self.crop_size = crop_size
+
+    def get_crop_bbox(self, mask):
+        """Randomly get a crop bounding box, constrained by the valid mask
+        
+        Args:
+            mask (ndarray): should be mask image, not original image
+        """
+
+        col, row = np.nonzero(mask>0)
+        w_min = min(max(row.min() - int(self.crop_size[1]*0.5), 0), mask.shape[1]-self.crop_size[1])
+        w_max = max(min(row.max() - int(self.crop_size[1]*0.5), mask.shape[1]-self.crop_size[1]), 0)
+        h_min = min(max(col.min() - int(self.crop_size[0]*0.5), 0), mask.shape[0]-self.crop_size[0])
+        h_max = max(min(col.max() - int(self.crop_size[0]*0.5), mask.shape[0]-self.crop_size[0]), 0)
+        offset_h = np.random.randint(h_min, h_max+1)
+        offset_w = np.random.randint(w_min, w_max+1)
+
+        # margin_h = max(mask.shape[0] - self.crop_size[0], 0)
+        # margin_w = max(mask.shape[1] - self.crop_size[1], 0)
+        # offset_h = np.random.randint(0, margin_h + 1)
+        # offset_w = np.random.randint(0, margin_w + 1)
+        crop_y1, crop_y2 = offset_h, offset_h + self.crop_size[0]
+        crop_x1, crop_x2 = offset_w, offset_w + self.crop_size[1]
+
+        return crop_y1, crop_y2, crop_x1, crop_x2
+
+    def crop(self, img, crop_bbox):
+        """Crop from ``img``"""
+        crop_y1, crop_y2, crop_x1, crop_x2 = crop_bbox
+        img = img[crop_y1:crop_y2, crop_x1:crop_x2, ...]
+        return img
+
+    def __call__(self, img_mask):
+        assert isinstance(img_mask, Image.Image)
+        img, mask = split_img_mask(img_mask)
+        img = np.asarray(img)
+        mask = np.asarray(mask)
+
+        crop_bbox = self.get_crop_bbox(mask)
+        # if self.cat_max_ratio < 1.:
+        #     # Repeat 10 times
+        #     for _ in range(10):
+        #         seg_temp = self.crop(results['gt_semantic_seg'], crop_bbox)
+        #         labels, cnt = np.unique(seg_temp, return_counts=True)
+        #         cnt = cnt[labels != self.ignore_index]
+        #         if len(cnt) > 1 and np.max(cnt) / np.sum(
+        #                 cnt) < self.cat_max_ratio:
+        #             break
+        #         crop_bbox = self.get_crop_bbox(img)
+
+        # crop the image
+        img = self.crop(img, crop_bbox)
+        mask = self.crop(mask, crop_bbox)
+        img_mask = merge_img_mask(img, mask)
+        return Image.fromarray(img_mask)
 
 
 @PIPELINES.register_module()
