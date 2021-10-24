@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-09
-Last Modified: 2021-10-14
+Last Modified: 2021-10-24
 	content: 
 '''
 
@@ -12,7 +12,7 @@ import os
 import os.path as osp
 from os import system
 import time
-
+from mylib.utils import wait_for_gpu
 
 import mmcv
 import torch
@@ -61,6 +61,10 @@ def parse_args():
         '--options', nargs='+', action=DictAction, help='custom options')
     parser.add_argument('--port', type=int, default=29500,
         help='port only works when launcher=="slurm"')
+
+    parser.add_argument('--required', type=float, default=None)
+    parser.add_argument('--interval', type=float, default=10)
+
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
@@ -70,6 +74,7 @@ def parse_args():
 
 def main():
     args = parse_args()
+    wait_for_gpu(args.required, args.interval)
 
     cfg = Config.fromfile(args.config)
             
