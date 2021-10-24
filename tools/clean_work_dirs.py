@@ -60,7 +60,7 @@ def clean_no_run_dirs_v2(path, bytes_threshold=600):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('path', type=str, 
-            default=r'work_dirs/deeplabv3plus_512x512_800_mixbn_rs2_to_gf3')
+            default=r'work_dirs')
     parser.add_argument('--threshold', type=int, 
             default=600)
     
