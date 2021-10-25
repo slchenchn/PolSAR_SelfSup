@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-19
-Last Modified: 2021-10-22
+Last Modified: 2021-10-25
 	content: 
 '''
 
@@ -192,7 +192,8 @@ class IMRandomResizedCrop(_transforms.RandomResizedCrop):
         assert isinstance(img_mask, Image.Image)
         img, mask = split_img_mask(img_mask)
         
-        for _ in range(10):
+        # for _ in range(10):
+        while True:
             i, j, h, w = self.get_params(mask, self.scale, self.ratio)
             new_mask = _transF.resized_crop(mask, i, j, h, w, self.size,
                             interpolation=_transF.InterpolationMode.NEAREST)
