@@ -1,11 +1,12 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-09
-Last Modified: 2021-10-24
+Last Modified: 2021-10-26
 	content: 
 '''
 
 from __future__ import division
+import warnings
 import argparse
 import importlib
 import os
@@ -19,6 +20,7 @@ import torch
 from mmcv import Config
 from mmcv.runner import init_dist
 from mmcv.utils import Config, DictAction
+from mmcv.cnn.utils import revert_sync_batchnorm
 
 from openselfsup import __version__
 from openselfsup.apis import set_random_seed, train_model
@@ -166,6 +168,14 @@ def main():
         # checkpoints as meta data
         cfg.checkpoint_config.meta = dict(
             openselfsup_version=__version__, config=cfg.text)
+            
+    if not distributed:
+        warnings.warn(
+            'SyncBN is only supported with DDP. To be compatible with DP, '
+            'we convert SyncBN to BN. Please use dist_train.sh which can '
+            'avoid this error.')
+        model = revert_sync_batchnorm(model)
+        
     # add an attribute for visualization convenience
     train_model(
         model,
