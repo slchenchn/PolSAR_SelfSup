@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-10-26
+Last Modified: 2021-10-27
 	content: compared with v1, add color jitter
 '''
 
@@ -31,5 +31,9 @@ model = dict(
     
 # additional hooks
 custom_hooks = [
-    dict(type='BYOLHook', end_momentum=1., add_to_tb=True)
+    dict(type='BYOLHook', end_momentum=1., add_to_tb=True, update_interval=1)
 ]
+
+data = dict(
+    imgs_per_gpu=32,
+)
