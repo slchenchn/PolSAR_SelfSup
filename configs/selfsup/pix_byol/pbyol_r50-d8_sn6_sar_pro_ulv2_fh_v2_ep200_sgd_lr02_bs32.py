@@ -1,14 +1,14 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-10-26
+Last Modified: 2021-10-27
 	content: compared with v1, add color jitter
 '''
 
 _base_ = ['../_base_/default_runtime.py', 
         '../_base_/models/r50-d8.py', 
         '../_base_/datasets/sn6_sar_pro_ulv2_fh_v2.py',
-        '../_base_/schedules/sgd_lr02_ep200.py'
+        '../_base_/schedules/sgd_lr02_ep200.py',
         ]
 
 # model settings, output stride=8 for deeplabv3
