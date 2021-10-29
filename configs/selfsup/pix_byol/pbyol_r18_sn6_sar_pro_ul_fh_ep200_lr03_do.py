@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-10-15
+Last Modified: 2021-10-29
 	content: with dropout 
     NOTE: this version of dropout is only on projector, not predictor
 '''
@@ -31,10 +31,12 @@ model = dict(
 )
     
 # additional hooks
+update_interval=1
 custom_hooks = [
-    dict(type='BYOLHook', end_momentum=1., add_to_tb=True)
+    dict(type='BYOLHook', end_momentum=1., add_to_tb=True, update_interval=update_interval)
 ]
 
+optimizer_config = dict(update_interval=update_interval)
 # optimizer
 # optimizer = dict(type='LARS', lr=0.3, weight_decay=0.000001, 
 #                 momentum=0.9,

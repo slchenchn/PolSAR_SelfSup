@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-10-14
+Last Modified: 2021-10-29
 	content: 
 '''
 
@@ -45,7 +45,9 @@ data=dict(
 )
 
 # additional hooks
+update_interval=4
 custom_hooks = [
-    dict(type='BYOLHook', end_momentum=1., update_interval=2)
+    dict(type='BYOLHook', end_momentum=1., update_interval=update_interval)
 ]
 
+optimizer_config = dict(update_interval=update_interval)
