@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-23
-Last Modified: 2021-10-10
+Last Modified: 2021-11-01
 	content: 
 '''
 
@@ -33,6 +33,41 @@ class NonLinear1x1ConvNeck(nn.Module):
             nn.ReLU(inplace=True),
             nn.Dropout2d(dropout_ratio),
             nn.Conv2d(hid_channels, out_channels, 1)
+        )
+    
+    def init_weights(self, init_linear='normal'):
+        _init_weights(self, init_linear)
+
+    def forward(self, x):
+        assert len(x) == 1, \
+                f"expect len of inputs feautes to be 1, Got: {len(x)}"
+        x = x[0]
+        x = self.mlp(x)
+        return [x]
+
+
+@NECKS.register_module()
+class NonLinearConvNeck(nn.Module):
+    ''' Neck for Pixel-BYOL
+    '''
+    def __init__(self,
+                 in_channels,
+                 hid_channels,
+                 out_channels,
+                 dropout_ratio=0.0,
+                 kernel_size=3,
+                 ):
+        super().__init__()
+        padding = kernel_size // 2
+        self.mlp = nn.Sequential(
+            nn.Dropout2d(dropout_ratio),
+            nn.Conv2d(in_channels, hid_channels, kernel_size=kernel_size,
+                        padding=padding),
+            nn.BatchNorm2d(hid_channels),
+            nn.ReLU(inplace=True),
+            nn.Dropout2d(dropout_ratio),
+            nn.Conv2d(hid_channels, out_channels, kernel_size=kernel_size,
+                        padding=padding),
         )
     
     def init_weights(self, init_linear='normal'):

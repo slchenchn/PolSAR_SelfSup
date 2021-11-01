@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-10-26
+Last Modified: 2021-10-29
 	content: 
 '''
 import random
@@ -15,7 +15,8 @@ from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmcv.runner import DistSamplerSeedHook, Runner, obj_from_dict
 
 from openselfsup.datasets import build_dataloader
-from openselfsup.hooks import build_hook, DistOptimizerHook
+from openselfsup.hooks import (build_hook, DistOptimizerHook,
+                            MyOptimizerHook)
 from openselfsup.utils import get_root_logger, optimizers, print_log
 try:
     import apex
@@ -275,7 +276,7 @@ def _non_dist_train(model,
         meta=meta)
     # an ugly walkaround to make the .log and .log.json filenames the same
     runner.timestamp = timestamp
-    optimizer_config = cfg.optimizer_config
+    optimizer_config = MyOptimizerHook(**cfg.optimizer_config)
     runner.register_training_hooks(cfg.lr_config, optimizer_config,
                                    cfg.checkpoint_config, cfg.log_config)
 
