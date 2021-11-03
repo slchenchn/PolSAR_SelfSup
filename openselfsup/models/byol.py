@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-10-12
+Last Modified: 2021-10-29
 	content: 
 '''
 import torch
@@ -50,9 +50,6 @@ class BYOL(nn.Module):
             param.requires_grad = False
         self.head = builder.build_head(head)
         self.init_weights(pretrained=pretrained)
-
-        self.base_momentum = base_momentum
-        self.momentum = base_momentum
 
     def init_weights(self, pretrained=None):
         """Initialize the weights of model.
