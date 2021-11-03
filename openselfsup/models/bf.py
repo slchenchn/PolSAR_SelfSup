@@ -20,7 +20,7 @@ from .byol import BYOL
 
 
 @MODELS.register_module()
-class BF(BYOL):
+class BF(nn.Module):
     ''' BYOL wth filter auxiliary head
     '''
     
@@ -31,10 +31,49 @@ class BF(BYOL):
                 auxiliary_head=None,
                 pretrained=None,
                 base_momentum=0.996,
-                **kwargs):
+                ):
 
-        super().__init__(backbone, neck, head, pretrained, base_momentum,
-                        **kwargs)
+        super().__init__()
+        self.backbone = builder.build_backbone(backbone)
+        self.neck = builder.build_neck(neck)
+        self.head = builder.build_head(head)
+
+        self.backbone_tgt = builder.build_backbone(backbone)
+        self.neck_tgt = builder.build_neck(neck)
+        for param in self.backbone_tgt.parameters():
+            param.requires_grad = False
+        for param in self.neck_tgt.parameters():
+            param.requires_grad = False
+        self.init_weights(pretrained=pretrained)
+
+        self.base_momentum = base_momentum
+        self.momentum = base_momentum
+
+    def init_weights(self, pretrained=None):
+        """Initialize the weights of model.
+
+        Args:
+            pretrained (str, optional): Path to pre-trained weights.
+                Default: None.
+        """
+        if pretrained is not None:
+            print_log('load model from: {pretrained}',
+                    logger='openselfsup')
+        else:
+            print_log(f'load model from None, traning from scratch',
+                    logger='openselfsup')
+
+        self.backbone.init_weights(pretrained=pretrained) # backbone
+        self.neck.init_weights(init_linear='kaiming') # projection
+        for param_ol, param_tgt in zip(self.backbone.parameters(),
+                                       self.backbone_tgt.parameters()):
+            param_tgt.data.copy_(param_ol.data)
+
+        for param_ol, param_tgt in zip(self.neck.parameters(),
+                                       self.neck_tgt.parameters()):
+            param_tgt.data.copy_(param_ol.data)
+
+        self.head.init_weights()
 
     def _view_img_mask_batch(self, 
                             img:Tensor,
@@ -76,8 +115,12 @@ class BF(BYOL):
         mask_v2 = mask[:, 1, ...].contiguous()
         
         # compute query features
-        proj_online_v1 = self.online_net(img_v1)[0]
-        proj_online_v2 = self.online_net(img_v2)[0]
+        laten_online_v1 = self.backbone(img_v1)
+        proj_online_v1 = self.neck(laten_online_v1)[0]
+        laten_online_v2 = self.backbone_tgt(img_v2)
+        proj_online_v2 = self.neck_tgt(laten_online_v2)[0]
+
+        
         
         with torch.no_grad():
             # QUERY: why need to clone
@@ -87,3 +130,16 @@ class BF(BYOL):
         # NOTE: mask should according to target features
         loss = self.head(proj_online_v1, proj_target_v2, mask_v1, mask_v2)['loss'] + self.head(proj_online_v2, proj_target_v1, mask_v2, mask_v1)['loss']
         return dict(loss=loss, byol_momentum=Tensor([self.momentum]))
+    
+    def forward_test(self, img, **kwargs):
+        pass
+
+    def forward(self, img, mode='train', **kwargs):
+        if mode == 'train':
+            return self.forward_train(img, **kwargs)
+        elif mode == 'test':
+            return self.forward_test(img, **kwargs)
+        elif mode == 'extract':
+            return self.backbone(img)
+        else:
+            raise Exception("No such mode: {}".format(mode))
