@@ -17,7 +17,7 @@ model = dict(
     base_momentum=0.996,
     neck=dict(
         type='NonLinearConvNeck',
-        kernel_size=3,
+        kernel_size=1,
         # olive-shaped projector
         in_channels=2048,
         hid_channels=4096,
