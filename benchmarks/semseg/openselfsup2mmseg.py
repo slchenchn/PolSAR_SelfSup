@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-27
-Last Modified: 2021-10-03
+Last Modified: 2021-11-04
 	content: 
 '''
 
@@ -26,7 +26,7 @@ def convert_openselfsup(ckpt: OrderedDict):
     new_ckpt = OrderedDict()
     converted = False
     for ii, (k, v) in enumerate(ckpt.items()):
-        if k.startswith('backbone'):
+        if k.startswith('backbone.'):
             converted = True
             new_key = k.replace('backbone.', '')
             print(f'select {k} as {new_key}')
