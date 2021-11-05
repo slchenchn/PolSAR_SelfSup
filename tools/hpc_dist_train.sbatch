@@ -24,11 +24,12 @@ PYTHONPATH="$(dirname $SLURM_SUBMIT_DIR)/..":$PYTHONPATH \
 echo "python -m torch.distributed.launch --nproc_per_node=2 \
     --master_port=$PORT \
     tools/train.py $CONFIG --launcher pytorch --options data.samples_per_gpu=8 data.workers_per_gpu=8 ${@:3}"
-python -m torch.distributed.launch --nproc_per_node=2 --master_port=$PORT \
+python -m torch.distributed.launch \
+    --nproc_per_node=2 \
+    --master_port=$PORT \
     tools/train.py \
-    configs/deeplabv3/deeplabv3_r50-d8-selfsup_512x512_20k_sn6_sar_pro_rotated_ft.py \
+    configs/selfsup/pix_byol/pbyolv3_r50-d8_sn6_sar_pro_ul_fh_v2_ep1600_lars_lr02_bs256.py \
     --launcher pytorch \
     --options data.samples_per_gpu=8 \
     data.workers_per_gpu=8 \
-    model.pretrained=/home/chenshuailin/project/code/PolSAR_SelfSup/work_dirs/pbyol_r50-d8_sn6_sar_pro_ul_fh_v2_ep1600_lars_lr02_bs256/20211029_112637/mmseg_epoch_1600.pth \
     ${@:3}
