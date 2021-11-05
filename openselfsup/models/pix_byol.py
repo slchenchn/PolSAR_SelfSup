@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-09-30
+Last Modified: 2021-11-05
 	content: 
 '''
 import os.path as osp
@@ -84,4 +84,4 @@ class PixBYOL(BYOL):
 
         # NOTE: mask should according to target features
         loss = self.head(proj_online_v1, proj_target_v2, mask_v1, mask_v2)['loss'] + self.head(proj_online_v2, proj_target_v1, mask_v2, mask_v1)['loss']
-        return dict(loss=loss, byol_momentum=Tensor([self.momentum]))
+        return dict(loss=loss, byol_momentum=torch.tensor([self.momentum], device=loss.device))
