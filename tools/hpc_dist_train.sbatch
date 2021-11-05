@@ -33,16 +33,6 @@ echo "ppython -m torch.distributed.launch \
     ${@:3}
     "
 
-# python -m torch.distributed.launch \
-#     --nproc_per_node=2 \
-#     --master_port=$PORT \
-#     tools/train.py \
-#     configs/selfsup/pix_byol/pbyolv3_r50-d8_sn6_sar_pro_ul_fh_v2_ep1600_lars_lr02_bs256.py \
-#     --launcher pytorch \
-#     --options data.imgs_per_gpu=16 \
-#     data.workers_per_gpu=16 \
-#     ${@:3}
-
 python -m torch.distributed.launch \
     --nproc_per_node=2 \
     --master_port=$PORT \
@@ -52,3 +42,14 @@ python -m torch.distributed.launch \
     --options data.imgs_per_gpu=16 \
     data.workers_per_gpu=16 \
     ${@:3}
+
+# for debug
+# python -m torch.distributed.launch \
+#     --nproc_per_node=2 \
+#     --master_port=$PORT \
+#     tools/train.py \
+#     configs/selfsup/pix_byol/pbyolv3_r50-d8_sn6_sar_pro_ul_fh_v2_ep1600_lars_lr02_bs256.py \
+#     --launcher pytorch \
+#     --options data.imgs_per_gpu=2 \
+#     data.workers_per_gpu=1 \
+#     ${@:3}
