@@ -39,6 +39,6 @@ python -m torch.distributed.launch \
     tools/train.py \
     configs/selfsup/pix_byol/pbyolv3_r50-d8_sn6_sar_pro_ul_fh_v2_ep1600_lars_lr02_bs256.py \
     --launcher pytorch \
-    --options data.imgs_per_gpu.samples_per_gpu=16 \
+    --options data.imgs_per_gpu=16 \
     data.workers_per_gpu=16 \
     ${@:3}
