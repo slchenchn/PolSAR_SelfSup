@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-14
-Last Modified: 2021-10-29
+Last Modified: 2021-11-05
 	content: 
 '''
 import random
@@ -47,8 +47,13 @@ def parse_losses(losses):
     for loss_name, loss_value in losses.items():
         if isinstance(loss_value, torch.Tensor):
             log_vars[loss_name] = loss_value.mean()
+            print(f'\ntensor:')
+            print(loss_value)
+            print(log_vars[loss_name])
         elif isinstance(loss_value, list):
             log_vars[loss_name] = sum(_loss.mean() for _loss in loss_value)
+            print(f'\nlist: ')
+            print(log_vars[loss_name])
         else:
             raise TypeError(
                 '{} is not a tensor or list of tensors'.format(loss_name))
@@ -60,6 +65,8 @@ def parse_losses(losses):
         # reduce loss when distributed training
         if dist.is_available() and dist.is_initialized():
             loss_value = loss_value.data.clone()
+            print(f'\ndist: ')
+            print({loss_value}, {loss_value.is_sparse})
             dist.all_reduce(loss_value.div_(dist.get_world_size()))
         log_vars[loss_name] = loss_value.item()
 

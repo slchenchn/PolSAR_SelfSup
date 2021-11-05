@@ -9,4 +9,7 @@ PORT=${PORT:-29500}
 WORK_DIR=$(echo ${CFG%.*} | sed -e "s/configs/work_dirs/g")/
 
 $PYTHON -m torch.distributed.launch --nproc_per_node=$GPUS --master_port=$PORT \
-    tools/train.py $CFG  --launcher pytorch ${PY_ARGS}
+    tools/train.py $CFG  --launcher pytorch \
+    --options data.imgs_per_gpu=2 \
+    data.workers_per_gpu=1 \
+    ${PY_ARGS}
