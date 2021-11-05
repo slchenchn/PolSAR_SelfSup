@@ -8,7 +8,7 @@
 #SBATCH --partition=gpu
 
 #SBATCH --nodes=1
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:4
 #SBATCH --cpus-per-task=16
 
 CONFIG=$1
@@ -23,7 +23,7 @@ source activate openselfsup
 PYTHONPATH="$(dirname $SLURM_SUBMIT_DIR)/..":$PYTHONPATH \
 
 echo "ppython -m torch.distributed.launch \
-    --nproc_per_node=2 \
+    --nproc_per_node=4 \
     --master_port=$PORT \
     tools/train.py \
     configs/selfsup/pix_byol/pbyolv3_r50-d8_sn6_sar_pro_ul_fh_v2_ep1600_lars_lr02_bs256.py \
@@ -34,11 +34,11 @@ echo "ppython -m torch.distributed.launch \
     "
 
 python -m torch.distributed.launch \
-    --nproc_per_node=2 \
+    --nproc_per_node=4 \
     --master_port=$PORT \
     tools/train.py \
     configs/selfsup/pix_byol/pbyolv3_r50-d8_sn6_sar_pro_ul_fh_v2_ep1600_lars_lr02_bs256.py \
     --launcher pytorch \
-    --options data.samples_per_gpu=8 \
-    data.workers_per_gpu=8 \
+    --options data.samples_per_gpu=4 \
+    data.workers_per_gpu=4 \
     ${@:3}

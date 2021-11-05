@@ -33,7 +33,7 @@ model = dict(
 )
     
 # additional hooks
-update_interval=8
+update_interval=16
 custom_hooks = [
     dict(type='BYOLHook', end_momentum=1., add_to_tb=True, update_interval=update_interval)
 ]
