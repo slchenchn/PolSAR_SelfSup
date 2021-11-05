@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-09
-Last Modified: 2021-10-26
+Last Modified: 2021-11-05
 	content: 
 '''
 
@@ -167,7 +167,7 @@ def main():
         # save openselfsup version, config file content and class names in
         # checkpoints as meta data
         cfg.checkpoint_config.meta = dict(
-            openselfsup_version=__version__, config=cfg.text)
+            openselfsup_version=__version__, config=cfg.pretty_text)
             
     if not distributed:
         warnings.warn(
