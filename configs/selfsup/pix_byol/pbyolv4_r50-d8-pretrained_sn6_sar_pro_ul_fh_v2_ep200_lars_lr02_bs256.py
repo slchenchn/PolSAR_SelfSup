@@ -30,7 +30,7 @@ model = dict(
 )
     
 # additional hooks
-update_interval=16
+update_interval=8
 custom_hooks = [
     dict(type='BYOLHook', end_momentum=1., add_to_tb=True, update_interval=update_interval)
 ]
@@ -38,5 +38,5 @@ custom_hooks = [
 optimizer_config = dict(update_interval=update_interval)
 
 data = dict(
-    imgs_per_gpu=16,
+    imgs_per_gpu=32,
 )
