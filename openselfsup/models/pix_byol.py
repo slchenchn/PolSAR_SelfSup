@@ -137,5 +137,5 @@ class PixBYOLV5(PixBYOL):
             proj_tgt_v2_v1 = self.neck_tgt([segment_feat_v2_v1.permute(0, 3, 1, 2).contiguous()])[0]
 
         # NOTE: mask should according to target features
-        loss = self.head(proj_ol_v1, proj_tgt_v2_v1, loss_mask_v1)['loss'] + self.head(proj_ol_v2, proj_tgt_v1_v2, mask_v2, loss_mask_v1)['loss']
+        loss = self.head(proj_ol_v1, proj_tgt_v2_v1, loss_mask_v1)['loss'] + self.head(proj_ol_v2, proj_tgt_v1_v2, loss_mask_v2)['loss']
         return dict(loss=loss, byol_momentum=torch.tensor([self.momentum], device=loss.device))
