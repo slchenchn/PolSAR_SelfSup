@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-08
-Last Modified: 2021-09-10
+Last Modified: 2021-11-18
 	content: 
 '''
 from .backbones import *  # noqa: F401,F403
@@ -20,4 +20,4 @@ from .rotation_pred import RotationPred
 from .relative_loc import RelativeLoc
 from .simclr import SimCLR
 
-from .pix_byol import PixBYOL
+from .pix_byol import PixBYOL, PixBYOLV5
