@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-18
-Last Modified: 2021-10-12
+Last Modified: 2021-11-18
 	content: 
 '''
 
@@ -76,4 +76,33 @@ class PixPredHead(LatentPredictHead):
         if self.size_average:
             loss /= loss_mask.sum()
         return dict(loss=loss)
+
+
+@HEADS.register_module()
+class PixPredHeadV5(LatentPredictHead):
+    ''' Compatible with PixBYOLV5 '''
+
+    def forward(self,
+                input:Tensor,
+                target:Tensor,
+                loss_mask:Tensor,):
+        """
+        Args:
+            input (Tensor): NxHxWxC input features.
+            target (Tensor): NxHxWxC target features.
+            mask (Tensor): NxHxW mask image.
+
+        Returns:
+            dict[str, Tensor]: A dictionary of loss components.
+        """
+
+        pred = self.predictor([input])[0]
+        pred_norm = F.normalize(pred, dim=1).permute(0, 2, 3, 1).contiguous()
+        target_norm = F.normalize(target, dim=1).permute(0, 2, 3, 1).contiguous()
+
+            
+        loss = -2 * (pred_norm * target_norm)[loss_mask.bool()].sum()
         
+        if self.size_average:
+            loss /= loss_mask.sum()
+        return dict(loss=loss)
