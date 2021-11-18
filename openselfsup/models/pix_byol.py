@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-11-05
+Last Modified: 2021-11-18
 	content: 
 '''
 import os.path as osp
@@ -13,6 +13,7 @@ import mylib.labelme_utils as lu
 import torchvision.transforms.functional as _transF
 
 from openselfsup.utils import print_log
+from openselfsup.ops import resize
 from . import builder
 from .registry import MODELS
 from .byol import BYOL
@@ -84,4 +85,57 @@ class PixBYOL(BYOL):
 
         # NOTE: mask should according to target features
         loss = self.head(proj_online_v1, proj_target_v2, mask_v1, mask_v2)['loss'] + self.head(proj_online_v2, proj_target_v1, mask_v2, mask_v1)['loss']
+        return dict(loss=loss, byol_momentum=torch.tensor([self.momentum], device=loss.device))
+
+
+@MODELS.register_module()
+class PixBYOLV5(PixBYOL):
+    ''' PixBYOL v5, its mlp of projector and predictor should be 1x1 conv
+    '''
+
+    def forward_train(self, img, mask, **kargs):
+        # self._view_img_mask_batch(img, mask)
+        assert img.dim() == 5, f"Input must have 5 dims, got: {img.dim()}"
+        img_v1 = img[:, 0, ...].contiguous()
+        img_v2 = img[:, 1, ...].contiguous()
+        mask_v1 = mask[:, 0, ...].contiguous()
+        mask_v2 = mask[:, 1, ...].contiguous()
+        
+        # compute query features
+        proj_ol_v1 = self.online_net(img_v1)[0]
+        proj_ol_v2 = self.online_net(img_v2)[0]
+        
+        with torch.no_grad():
+            # backbone
+            feat_tgt_v1 = self.backbone(img_v1)[0].permute(0, 2, 3, 1)
+            feat_tgt_v2 = self.backbone(img_v2)[0].permute(0, 2, 3, 1)
+            mask_v1 = resize(mask_v1.unsqueeze(1).float(),
+                    feat_tgt_v1.shape[1:3]).squeeze().int()
+            mask_v2 = resize(mask_v2.unsqueeze(1).float(),
+                    feat_tgt_v1.shape[1:3]).squeeze().int()
+
+            # extract segment feature
+            segment_idx = np.intersect1d(mask_v1.cpu().numpy(), mask_v2.cpu().numpy())
+            segment_feat_v1_v2 = torch.zeros_like(feat_tgt_v1)
+            segment_feat_v2_v1 = torch.zeros_like(feat_tgt_v1)
+            loss_mask_v1 = torch.zeros_like(mask_v1)
+            loss_mask_v2 = torch.zeros_like(mask_v1)
+            for ii in segment_idx:
+                if ii==0:
+                    continue
+
+                # NOTE: Advanced indexing always returns a copy of the data
+                idx_v1 = (mask_v1==ii)
+                idx_v2 = (mask_v2==ii)
+                segment_feat_v1_v2[idx_v2] = feat_tgt_v1[idx_v1].mean(dim=0)
+                segment_feat_v2_v1[idx_v1] = feat_tgt_v2[idx_v2].mean(dim=0)
+                loss_mask_v1 += idx_v1
+                loss_mask_v2 += idx_v2
+
+            # neck
+            proj_tgt_v1_v2 = self.neck_tgt([segment_feat_v1_v2.permute(0, 3, 1, 2).contiguous()])[0]
+            proj_tgt_v2_v1 = self.neck_tgt([segment_feat_v2_v1.permute(0, 3, 1, 2).contiguous()])[0]
+
+        # NOTE: mask should according to target features
+        loss = self.head(proj_ol_v1, proj_tgt_v2_v1, loss_mask_v1)['loss'] + self.head(proj_ol_v2, proj_tgt_v1_v2, loss_mask_v2)['loss']
         return dict(loss=loss, byol_momentum=torch.tensor([self.momentum], device=loss.device))
