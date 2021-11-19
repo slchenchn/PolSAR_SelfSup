@@ -2,7 +2,7 @@
 Author: Shuailin Chen
 Created Date: 2021-09-10
 Last Modified: 2021-11-18
-	content: compared with v1, add color jitter
+	content: change to simsima
 '''
 
 _base_ = ['../_base_/default_runtime.py', 

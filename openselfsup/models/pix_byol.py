@@ -1,7 +1,7 @@
 '''
 Author: Shuailin Chen
 Created Date: 2021-09-10
-Last Modified: 2021-11-18
+Last Modified: 2021-11-19
 	content: 
 '''
 import os.path as osp
@@ -107,8 +107,8 @@ class PixBYOLV5(PixBYOL):
         
         with torch.no_grad():
             # backbone
-            feat_tgt_v1 = self.backbone(img_v1)[0].permute(0, 2, 3, 1)
-            feat_tgt_v2 = self.backbone(img_v2)[0].permute(0, 2, 3, 1)
+            feat_tgt_v1 = self.backbone_tgt(img_v1)[0].permute(0, 2, 3, 1)
+            feat_tgt_v2 = self.backbone_tgt(img_v2)[0].permute(0, 2, 3, 1)
             mask_v1 = resize(mask_v1.unsqueeze(1).float(),
                     feat_tgt_v1.shape[1:3]).squeeze().int()
             mask_v2 = resize(mask_v2.unsqueeze(1).float(),
